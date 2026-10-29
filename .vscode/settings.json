@@ -1,0 +1,10 @@
+{
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "files.associations": {
+    "*.dxf": "plaintext",
+    "*.svg": "xml"
+  },
+  "editor.formatOnSave": true
+}
+
