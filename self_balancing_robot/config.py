@@ -27,6 +27,7 @@ class RobotConfig:
     MAX_POS_INT: float = 0.030     # Azami konum integrali sınırı (~1.7 derece)
 
     # Dönüş Kazancı (Yumuşak Diferansiyel Dönüş)
+    DRIVE_SPEED: float = 0.20       # m/s güvenli nominal sürüş hızı (Modül B)
     TURN_SPEED: float = 1.2        # rad/s diferansiyel dönüş hızı (~34 derece/saniye)
 
     # DC Motor Ölü Bölgesi (Deadband) & Statik Sürtünme Telafisi
