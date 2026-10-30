@@ -42,3 +42,6 @@ webots/worlds/.*.png
 
 webots/worlds/.*.wbproj
 *.wbproj
+
+# Isolated optimization projects and raw experiment data
+logs/voltage_optuna/
