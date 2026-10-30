@@ -7,6 +7,10 @@ Denge Kontrolcüsü -> Gerilim (Voltaj/PWM) Komutu -> JGB37 DC Motor Modeli (Ter
 import os
 import sys
 import math
+import json
+import random
+import csv
+from datetime import datetime
 from pathlib import Path
 from controller import Supervisor, Keyboard
 
@@ -55,15 +59,27 @@ class VoltageBalanceController:
         self.cfg = cfg
         self.motor = DCMotorModel()
 
-        # Durum Geri Beslemeli Gerilim / PWM Kazançları (State Feedback Voltages)
-        self.KP_VOLT: float = 65.0    # Açı kazancı (V/rad) ~1.22 V/derece (veya ~26 PWM/derece)
-        self.KD_VOLT: float = 1.60    # Eğim açısal hızı sönümleme gerilimi (V/(rad/s))
-        self.KV_VEL: float = 0.15      # Hızdan hedef eğim sönümlemesi (rad/(m/s))
-        self.KP_POS: float = 0.18      # Konumdan hedef eğim (rad/m)
-        self.KI_POS: float = 0.015     # Konum integrali kazancı (rad/(m*s))
-        self.KP_VEL_DRIVE: float = 0.12  # Sürüş anı hız hatası hedef açısı kazancı
+        # Durum Geri Beslemeli Gerilim / PWM Kazançları (Optuna ile optimize edildi - 100 deneme)
+        self.KP_VOLT: float = 56.47    # Açı kazancı (V/rad) ~0.99 V/derece (veya ~21 PWM/derece)
+        self.KD_VOLT: float = 1.05     # Eğim açısal hızı sönümleme gerilimi (V/(rad/s))
+        self.KV_VEL: float = 0.19      # Hızdan hedef eğim sönümlemesi (rad/(m/s))
+        self.KP_POS: float = 0.097     # Konumdan hedef eğim (rad/m)
+        self.KI_POS: float = 0.0145    # Konum integrali kazancı (rad/(m*s))
+        self.KP_VEL_DRIVE: float = 0.21  # Sürüş anı hız hatası hedef açısı kazancı
         self.MAX_PITCH_TARGET: float = 0.025  # Azami hedef eğim açısı (~1.43 derece)
         self.MAX_POS_INT: float = 0.030        # Clamping integral sınırı (m*s)
+
+        # Explicit parameter file for reproducible optimization; defaults remain usable.
+        parameter_file = os.environ.get("VOLTAGE_PARAMS_FILE")
+        if parameter_file:
+            values = json.loads(Path(parameter_file).read_text(encoding="utf-8"))
+            allowed = {"KP_VOLT", "KD_VOLT", "KV_VEL", "KP_POS", "KI_POS", "KP_VEL_DRIVE"}
+            if set(values) != allowed:
+                raise ValueError("Parameter file must contain exactly the six voltage gains")
+            for key, value in values.items():
+                if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
+                    raise ValueError(f"Invalid gain: {key}")
+                setattr(self, key, float(value))
 
         # Durum Değişkenleri
         self.robot_pos: float = 0.0
@@ -146,6 +162,7 @@ class VoltageBalanceController:
         self.is_holding_pos = True
 
 def main():
+    random.seed(int(os.environ.get("VOLTAGE_RANDOM_SEED", "42")))
     robot = Supervisor()
     timestep = int(robot.getBasicTimeStep())
     if timestep <= 0:
@@ -162,7 +179,16 @@ def main():
     fusion = SensorFusion(cfg.GYRO_NOISE_STD, cfg.ACCEL_NOISE_STD)
     controller = VoltageBalanceController(cfg)
     motor_model = controller.motor
-    telemetry = TelemetryLogger(filename=os.path.join(str(project_root), "logs", "voltage_telemetry.csv"), command_unit="volts")
+    log_path = os.environ.get("VOLTAGE_LOG_PATH")
+    if not log_path:
+        log_path = str(project_root / "logs" / ("voltage_" + datetime.now().strftime("%Y%m%d_%H%M%S_%f") + ".csv"))
+    telemetry = TelemetryLogger(filename=log_path, command_unit="volts")
+    evaluation_file = None
+    if os.environ.get("VOLTAGE_EVALUATION_PATH"):
+        evaluation_file = open(os.environ["VOLTAGE_EVALUATION_PATH"], "w", newline="", buffering=1)
+        evaluation_writer = csv.writer(evaluation_file)
+        evaluation_writer.writerow(["step", "time", "pitch", "velocity", "target", "left_volts", "right_volts", "box_dropped"])
+
 
     keyboard = robot.getKeyboard()
     keyboard.enable(timestep)
@@ -385,6 +411,13 @@ def main():
             pitch_est_deg=pitch_deg, pos_m=controller.robot_pos
         )
 
+        if evaluation_file:
+            orientation = robot_node.getOrientation()
+            velocity = robot_node.getVelocity()
+            forward_velocity = sum(orientation[i * 3 + 1] * velocity[i] for i in range(3))
+            evaluation_writer.writerow([step_count, sim_time, true_pitch_deg, forward_velocity,
+                                        desired_v, v_left, v_right, int(box_dropped)])
+
         # Konsol Bilgilendirmesi (200 ms)
         if step_count % 20 == 0:
             print(f"[t={sim_time:5.2f}s] Egim: {true_pitch_deg:+6.2f} deg | Pos: {controller.robot_pos:+6.3f} m | Hiz: {filtered_vel:+5.2f} m/s | Volt: {v_left:+5.1f}V (PWM: {pwm_left:+4d}) | Tork: {tau_left:+5.2f} Nm (Akim: {i_left:+4.2f}A)")
@@ -396,6 +429,8 @@ def main():
             break
 
     telemetry.close()
+    if evaluation_file:
+        evaluation_file.close()
 
 if __name__ == "__main__":
     main()

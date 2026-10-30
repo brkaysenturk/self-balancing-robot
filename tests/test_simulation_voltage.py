@@ -56,6 +56,7 @@ def run_voltage_test():
             pass
 
     env = os.environ.copy()
+    env["VOLTAGE_LOG_PATH"] = telemetry_path
     env["WEBOTS_TEST_STEPS"] = "3000"
     # t=15s (adım 1500) anında 1.5 N impuls dürtme kuvveti
     env["TEST_PUSH_COMMANDS"] = "1500:1.5"
