@@ -1,0 +1,564 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/Parquetry.proto"
+
+WorldInfo {
+  basicTimeStep 10
+  coordinateSystem "ENU"
+  contactProperties [
+    ContactProperties {
+      material1 "wheel_rubber"
+      material2 "default"
+      coulombFriction [
+        1.8
+      ]
+      bounce 0.05
+    }
+    ContactProperties {
+      material1 "medicine_box"
+      material2 "default"
+      coulombFriction [
+        0.5
+      ]
+      bounce 0.02
+    }
+  ]
+}
+
+Viewpoint {
+  orientation -0.15 0.15 0.98 1.85
+  position 0.65 -1.35 0.65
+  follow "cdtp_balance_robot"
+  followType "Tracking Shot"
+}
+
+TexturedBackground {
+}
+
+TexturedBackgroundLight {
+}
+
+RectangleArena {
+  floorSize 12 12
+  floorAppearance PBRAppearance {
+    baseColor 0.88 0.86 0.82
+    roughness 0.4
+    metalness 0.05
+  }
+  wallHeight 1.5
+  wallAppearance PBRAppearance {
+    baseColor 0.94 0.94 0.95
+    roughness 0.6
+    metalness 0.0
+  }
+}
+
+DEF cdtp_balance_robot Robot {
+  translation 0 0 0.0425
+  rotation 0 0 1 0
+  supervisor TRUE
+  children [
+    # ========================================================
+    # SENSÖRLER (IMU, Jiroskop, İvmeölçer - Katman 3 Merkezinde)
+    # ========================================================
+    InertialUnit {
+      name "imu"
+      translation 0 0 0.083
+    }
+    Gyro {
+      name "gyro"
+      translation 0 0 0.083
+    }
+    Accelerometer {
+      name "accel"
+      translation 0 0 0.083
+    }
+
+    # ========================================================
+    # SOL TEKERLEK & MOTOR (85 mm Silikon Tekerlek + Enkoder)
+    # ========================================================
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 1 0 0
+        anchor -0.085 0 0
+      }
+      device [
+        RotationalMotor {
+          name "left_motor"
+          maxVelocity 35.0
+          maxTorque 1.5
+        }
+        PositionSensor {
+          name "left_encoder"
+        }
+      ]
+      endPoint Solid {
+        name "left_wheel"
+        translation -0.085 0 0
+        rotation 0 1 0 1.57079632679
+        children [
+          DEF WHEEL_LEFT Shape {
+            appearance PBRAppearance {
+              baseColor 0.15 0.15 0.15
+              roughness 0.7
+              metalness 0.1
+            }
+            geometry Cylinder {
+              height 0.035
+              radius 0.0425
+            }
+          }
+          DEF WHEEL_RIM_LEFT Shape {
+            appearance PBRAppearance {
+              baseColor 0.8 0.15 0.15
+              roughness 0.3
+              metalness 0.8
+            }
+            geometry Cylinder {
+              height 0.036
+              radius 0.024
+            }
+          }
+        ]
+        contactMaterial "wheel_rubber"
+        boundingObject USE WHEEL_LEFT
+        physics Physics {
+          density -1
+          mass 0.07
+        }
+      }
+    }
+
+    # ========================================================
+    # SAĞ TEKERLEK & MOTOR (85 mm Silikon Tekerlek + Enkoder)
+    # ========================================================
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 1 0 0
+        anchor 0.085 0 0
+      }
+      device [
+        RotationalMotor {
+          name "right_motor"
+          maxVelocity 35.0
+          maxTorque 1.5
+        }
+        PositionSensor {
+          name "right_encoder"
+        }
+      ]
+      endPoint Solid {
+        name "right_wheel"
+        translation 0.085 0 0
+        rotation 0 1 0 1.57079632679
+        children [
+          DEF WHEEL_RIGHT Shape {
+            appearance PBRAppearance {
+              baseColor 0.15 0.15 0.15
+              roughness 0.7
+              metalness 0.1
+            }
+            geometry Cylinder {
+              height 0.035
+              radius 0.0425
+            }
+          }
+          DEF WHEEL_RIM_RIGHT Shape {
+            appearance PBRAppearance {
+              baseColor 0.8 0.15 0.15
+              roughness 0.3
+              metalness 0.8
+            }
+            geometry Cylinder {
+              height 0.036
+              radius 0.024
+            }
+          }
+        ]
+        contactMaterial "wheel_rubber"
+        boundingObject USE WHEEL_RIGHT
+        physics Physics {
+          density -1
+          mass 0.07
+        }
+      }
+    }
+
+    # ========================================================
+    # 4 KATMANLI ŞASİ PLAKALARI (135 mm × 95 mm × 5 mm Beyaz Dekota)
+    # ========================================================
+    # Katman 1: Taban (Base Deck)
+    Transform {
+      translation 0 0 0.008
+      children [
+        DEF DECK_SHAPE Shape {
+          appearance DEF WHITE_DEKOTA PBRAppearance {
+            baseColor 0.95 0.95 0.96
+            roughness 0.25
+            metalness 0.0
+          }
+          geometry Box {
+            size 0.135 0.095 0.005
+          }
+        }
+      ]
+    }
+
+    # Katman 2: Güç & Batarya Katmanı (Power Deck)
+    Transform {
+      translation 0 0 0.043
+      children [
+        USE DECK_SHAPE
+      ]
+    }
+
+    # Katman 3: Kontrol & Beyin Katmanı (Brain Deck)
+    Transform {
+      translation 0 0 0.083
+      children [
+        USE DECK_SHAPE
+      ]
+    }
+
+    # Katman 4: Tavan & İlaç Taşıma Katmanı (Top Deck)
+    Transform {
+      translation 0 0 0.123
+      children [
+        USE DECK_SHAPE
+      ]
+    }
+
+    # ========================================================
+    # 4 ADET M3 PASLANMAZ ÇELİK TİJ (KAFES KOLONLARI)
+    # ========================================================
+    # Ön-Sağ Tij Kolonu
+    Transform {
+      translation 0.0615 0.0415 0.0655
+      rotation 0 0 1 0
+      children [
+        DEF TIJ_ROD Shape {
+          appearance DEF STEEL_ROD PBRAppearance {
+            baseColor 0.82 0.84 0.87
+            roughness 0.2
+            metalness 0.95
+          }
+          geometry Cylinder {
+            height 0.122
+            radius 0.0016
+          }
+        }
+      ]
+    }
+    # Ön-Sol Tij Kolonu
+    Transform {
+      translation -0.0615 0.0415 0.0655
+      rotation 0 0 1 0
+      children [
+        USE TIJ_ROD
+      ]
+    }
+    # Arka-Sağ Tij Kolonu
+    Transform {
+      translation 0.0615 -0.0415 0.0655
+      rotation 0 0 1 0
+      children [
+        USE TIJ_ROD
+      ]
+    }
+    # Arka-Sol Tij Kolonu
+    Transform {
+      translation -0.0615 -0.0415 0.0655
+      rotation 0 0 1 0
+      children [
+        USE TIJ_ROD
+      ]
+    }
+
+    # ========================================================
+    # İÇ BİLEŞENLER & DONANIMLAR
+    # ========================================================
+    # 2x JGB37-520 Redüktörlü Metal Motor Gövdeleri
+    Transform {
+      translation -0.045 0 0
+      rotation 0 1 0 1.57079632679
+      children [
+        DEF MOTOR_BODY Shape {
+          appearance DEF MOTOR_METAL PBRAppearance {
+            baseColor 0.65 0.68 0.72
+            roughness 0.35
+            metalness 0.85
+          }
+          geometry Cylinder {
+            height 0.052
+            radius 0.0185
+          }
+        }
+      ]
+    }
+    Transform {
+      translation 0.045 0 0
+      rotation 0 1 0 1.57079632679
+      children [
+        USE MOTOR_BODY
+      ]
+    }
+
+    # TB6612FNG Sürücü (Katman 1 Tabanında)
+    Transform {
+      translation 0 -0.018 0.013
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.85 0.1 0.1
+            roughness 0.4
+          }
+          geometry Box {
+            size 0.022 0.022 0.005
+          }
+        }
+      ]
+    }
+
+    # 3S 18650 Li-ion Batarya Paketi (Katman 2 Üzerinde - Ağırlık Merkezi CoM=10cm)
+    Transform {
+      translation 0 0 0.056
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.1 0.35 0.85
+            roughness 0.35
+            metalness 0.1
+          }
+          geometry Box {
+            size 0.065 0.055 0.020
+          }
+        }
+      ]
+    }
+
+    # ESP32 DevKit V1 (Katman 3 Üzerinde)
+    Transform {
+      translation 0 -0.015 0.090
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.1 0.1 0.12
+            roughness 0.3
+          }
+          geometry Box {
+            size 0.052 0.028 0.006
+          }
+        }
+      ]
+    }
+
+    # MPU-6050 Sensör Modülü (Katman 3 Merkezinde X=0, Y=0)
+    Transform {
+      translation 0 0.015 0.088
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.1 0.25 0.5
+            roughness 0.3
+          }
+          geometry Box {
+            size 0.020 0.015 0.004
+          }
+        }
+      ]
+    }
+
+    # Katman 4 Aspirin / Parol Kaset Yuvası Çerçevesi (Holster Rim)
+    Transform {
+      translation 0 0.014 0.1355
+      children [
+        DEF HOLSTER_WALL_X Shape {
+          appearance USE WHITE_DEKOTA
+          geometry Box {
+            size 0.082 0.004 0.020
+          }
+        }
+      ]
+    }
+    Transform {
+      translation 0 -0.014 0.1355
+      children [
+        USE HOLSTER_WALL_X
+      ]
+    }
+    Transform {
+      translation -0.040 0 0.1355
+      children [
+        DEF HOLSTER_WALL_Y Shape {
+          appearance USE WHITE_DEKOTA
+          geometry Box {
+            size 0.004 0.026 0.020
+          }
+        }
+      ]
+    }
+    Transform {
+      translation 0.040 0 0.1355
+      children [
+        USE HOLSTER_WALL_Y
+      ]
+    }
+
+    # KCD11 Güç Switchi (Kırmızı Rocker Switch)
+    Transform {
+      translation -0.035 -0.030 0.130
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.9 0.15 0.1
+            roughness 0.2
+          }
+          geometry Box {
+            size 0.019 0.013 0.008
+          }
+        }
+      ]
+    }
+
+    # 3A Cam Sigorta Yuvası Kapağı
+    Transform {
+      translation 0.035 -0.030 0.130
+      rotation 0 0 1 0
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.1 0.1 0.1
+            roughness 0.6
+          }
+          geometry Cylinder {
+            height 0.008
+            radius 0.006
+          }
+        }
+      ]
+    }
+
+    # Durum/Şarj LEDi
+    Transform {
+      translation 0 0.035 0.129
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.1 1.0 0.2
+            emissiveColor 0.1 0.8 0.2
+          }
+          geometry Sphere {
+            radius 0.003
+          }
+        }
+      ]
+    }
+  ]
+
+  # Gövde Çarpışma Hacmi (BoundingObject)
+  boundingObject Group {
+    children [
+      Transform {
+        translation 0 0 0.065
+        children [
+          Box {
+            size 0.120 0.095 0.120
+          }
+        ]
+      }
+      # Katman 4 İlaç Yuvası Çerçeve Duvarları (Bounding)
+      Transform {
+        translation 0 0.014 0.1355
+        children [
+          Box {
+            size 0.082 0.004 0.020
+          }
+        ]
+      }
+      Transform {
+        translation 0 -0.014 0.1355
+        children [
+          Box {
+            size 0.082 0.004 0.020
+          }
+        ]
+      }
+      Transform {
+        translation -0.040 0 0.1355
+        children [
+          Box {
+            size 0.004 0.026 0.020
+          }
+        ]
+      }
+      Transform {
+        translation 0.040 0 0.1355
+        children [
+          Box {
+            size 0.004 0.026 0.020
+          }
+        ]
+      }
+    ]
+  }
+
+  physics Physics {
+    density -1
+    mass 0.72
+    centerOfMass [
+      0 0 0.055
+    ]
+  }
+
+  controller "balance_controller"
+}
+
+# ========================================================
+# AYRIK FİZİKSEL İLAÇ KUTUSU (Standart Aspirin - Modül E)
+# ========================================================
+DEF aspirin_box Solid {
+  translation 0 0 0.180
+  children [
+    DEF ASPIRIN_SHAPE Shape {
+      appearance PBRAppearance {
+        baseColor 0.1 0.72 0.35
+        roughness 0.35
+        metalness 0.05
+      }
+      geometry Box {
+        size 0.074 0.020 0.024
+      }
+    }
+  ]
+  name "aspirin_box"
+  contactMaterial "medicine_box"
+  boundingObject USE ASPIRIN_SHAPE
+  physics Physics {
+    density -1
+    mass 0.025
+  }
+}
+
+# ========================================================
+# EV İÇİ ZEMİN KABLO KANALI / EŞİK GEÇİŞİ (Floor Cable Conduit - 4 mm)
+# ========================================================
+Solid {
+  translation 0 0.85 0.002
+  children [
+    DEF CABLE_CONDUIT Shape {
+      appearance PBRAppearance {
+        baseColor 0.82 0.82 0.82
+        roughness 0.4
+        metalness 0.1
+      }
+      geometry Box {
+        size 3.0 0.045 0.004
+      }
+    }
+  ]
+  name "floor_cable_conduit"
+  boundingObject USE CABLE_CONDUIT
+}

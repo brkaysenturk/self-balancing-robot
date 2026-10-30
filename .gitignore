@@ -30,6 +30,7 @@ build/
 
 # Logs & Temporary Test Dumps
 *.log
+logs/*.csv
 scratch/
 temp/
 
