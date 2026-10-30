@@ -191,49 +191,46 @@ c:\YTU\self-balancing-robot\
 - **İç Döngü (Eğim Açısı PID - 100 Hz / dt = 10 ms):**
   - Eğim Açısı: IMU rpy[0] (Roll around X)
   - Eğim Hızı Filtresi: 50 Hz ayrık titremeyi (discrete chatter) engellemek için EMA filtresi (`filtered_rate = 0.70 * filtered_rate + 0.30 * gyro_vals[0]`) uygulandı.
-  - `KP_PITCH = 100.0`
-  - `KD_PITCH = 2.80`
-- **Dış Döngü (Anti-Windup Clamped Konum & Hız PI-D):**
-  - **Kök Neden ve Windup Teşhisi:** Açık uçlu entegrasyon veya aşırı sert kaskad geri beslemelerde dış döngü hedef açısı (`pitch_target`) satüre olmakta ve robotun mekanik trim arayışında geriye runaway drift yapmasına yol açmaktaydı.
+  - `KP_PITCH = 140.0` (Optuna ile optimize edildi)
+  - `KD_PITCH = 3.60`
+- **Dış Döngü (Anti-Windup Clamped Konum & Hız PI-D - 100 Hz / dt = 10 ms):**
+  - **Döngü Frekansı:** Dış döngü de iç döngü ile eşzamanlı olarak her 10 ms'de (100 Hz) hesaplanır.
   - **Clamping Anti-Windup (Koşullu Entegrasyon):**
     - Motor çıkışı azami hız sınırına (`MAX_VELOCITY = 30.0 rad/s`) ulaştığında veya hedef eğim açısı sınıra dayandığında integral hesabı dondurulur (freeze).
-    - Konum integrali `MAX_POS_INT = 0.040 rad` (~2.3 derece) sınırıyla sıkı biçimde clamp edilir.
-    - Sürüş tuşlarına (W/S/A/D) basıldığında veya durulduğunda integral derhal sıfırlanır; sürüş esnasında rüzgarlanma oluşması engellenir.
+    - Konum integrali `MAX_POS_INT = 0.030 rad` (~1.7 derece) sınırıyla sıkı biçimde clamp edilir.
+    - Sürüş komutlarında (W/S) integral sıfırlanır ve hız hatası üzerinden hedef eğim açısı (`pitch_target = - clamp(KP_VEL * vel_err, -MAX_PITCH_TARGET, MAX_PITCH_TARGET)`) üretilir.
+  - `KP_VEL = 0.045` (Hız hatası hedef eğim kazancı)
   - `KP_POS = 0.20` (Konum hatası kazancı, rad/m)
-  - `KI_POS = 0.03` (Konum integrali kazancı, rad/m-s)
-  - `KD_POS = 0.25` (Hız sönümleme kazancı, rad/(m/s))
-  - `MAX_PITCH_TARGET = 0.030 rad` (~1.7 derece azami gövde yatışı)
+  - `KI_POS = 0.015` (Konum integrali kazancı, rad/m-s)
+  - `MAX_PITCH_TARGET = 0.025 rad` (~1.43 derece azami hedef eğim açısı)
 - **Taban Hız İleri Beslemesi (Base Omega Feedforward & Dinamik Frenleme):**
   - **Sürüşten Duruşa Geçişte Öne Devrilme Kök Nedeni:** Robot W tuşuyla ileri giderken tekerleklerin doğrusal hızı (`v > 0`, `omega < 0`) oluşur. W bırakıldığında gövdeyi arkaya yatırmak için motor komutu doğrudan yavaşlatılırsa, tekerlekler yere göre motor-freni yaparak gövdeyi eylemsizlikle daha da öne fırlatır ve robot öne devrilir.
   - **Çözüm (Base Omega Feedforward):** Motor kontrol komutuna robotun anlık çizgisel hızına karşılık gelen dönme hızı (`base_omega = - v / R`) ileri besleme olarak eklendi (`u = base_omega + u_balance`).
   - Sürüş komutu bittiğinde robot ani bir pozisyon çıpası atmak yerine, hız hatasından (`target_velocity - v`) hafif bir frenleme eğimi üretir. Hız 0.05 m/s altına indiğinde robot durduğu yere yumuşakça çıpa atar.
-  - W / Yukarı Ok: İleri sürüş (+0.30 m/s)
-  - S / Aşağı Ok: Geri sürüş (-0.30 m/s)
+  - W / Yukarı Ok: İleri sürüş (güvenli nominal hız)
+  - S / Aşağı Ok: Geri sürüş (güvenli nominal hız)
   - A / Sol Ok: Sola diferansiyel dönüş
   - D / Sağ Ok: Sağa diferansiyel dönüş
   - Boşluk (Space): Frenleme ve anında durduğu yere konum kilidi atma
-  - R Tuşu: Robotu başlangıç koordinatlarına ve sıfır açıya sıfırlama (Supervisor fizik sıfırlama).
+  - R Tuşu: Robotu başlangıç koordinatlarına ve sıfır açıya sıfırlama (Devrilmiş olsa bile klavye emniyet bloğundan önce okunduğu için fizik sıfırlanabilir).
 
 ### 7.3. Gerçekçi Simülasyon Geliştirmeleri ve Fiziksel Dayanıklılık
 
 1. **Dış Dürtme / Bozucu Kuvvet Dayanıklılığı (Disturbance Rejection - P Tuşu):**
    - Webots Supervisor API (`robot_node.addForceWithOffset([0.0, push_force_y, 0.0], [0.0, 0.0, 0.08], True)`) ile robota anlık 4.0 N itme kuvveti uygulanabilir.
-   - P tuşuna basıldığında yönü değişen (bir ileri, bir geri) 4.0 N impuls uygulanır; kaskad kontrolcü azami 4.5 derece eğim içinde sendelemeyi söndürür ve devrilmeden 1.5 saniye içinde dik dengeye geri döner.
+   - P tuşuna basıldığında yönü değişen (bir ileri, bir geri) 4.0 N impuls uygulanır; kaskad kontrolcü gerçekte yaklaşık 6.9 derece tepe eğim altında sendelemeyi söndürür ve devrilmeden dik dengeye geri döner.
    - Doğrulama Testi: [test_simulation_balance.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_balance.py)
-2. **Ayrık Dinamik İlaç Kutusu (Solid Dynamic Medicine Box - Modül E):**
+2. **Ayrık Dinamik İlaç Kutusu ve Yerel Eksen (Body Frame) Doğrulama (Modül E):**
    - Katman 4 üzerine 80 × 26 mm dekota kaset yuvası sınırları ve çerçevesi eklendi.
    - 25 gram kütleye sahip bağımsız bir Aspirin ilaç kutusu `Solid` nesnesi olarak modellendi; temas sürtünmesi (`ContactProperties: medicine_box - default, coulombFriction 0.5`) tanımlandı.
-   - Robot ileri-geri hızlanıp ani fren yapsa veya dürtülse dahi ilaç kutusu hazneden fırlamadan güvenle taşınır.
-   - Doğrulama Testi: [test_simulation_driving.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_driving.py) ve [test_simulation_balance.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_balance.py)
-3. **MPU-6050 Sensör Gürültüsü & Tamamlayıcı Filtre (Complementary Filter):**
-   - Jiroskop (standart sapma 0.002 rad/s) ve ivmeölçer (standart sapma 0.012 m/s²) üzerine gerçekçi beyaz Gauss gürültüsü eklendi.
-   - `balance_controller.py` içinde ideal simülasyon oryantasyonu yerine ESP32 firmware mimarisiyle birebir aynı %98 Gyro integrali + %2 İvmeölçer açısı tamamlayıcı filtresi (`pitch_est = 0.98 * (pitch_est + gyro_rate * dt) + 0.02 * accel_pitch`) entegre edildi.
-   - Doğrulama Testi: [test_simulation_balance.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_balance.py)
+   - [balance_controller.py](file:///c:/YTU/self-balancing-robot/webots/controllers/balance_controller/balance_controller.py) içinde her adımda robot rotasyon matrisi (`R_inv = R^T`) kullanılarak kutunun bağıl konumu robotun yerel gövde eksenine (`dx_loc, dy_loc, dz_loc`) dönüştürülür. Robot eğilse dahi yanıltıcı hata üretilmez; kutu kaset sınırlarını aşarsa (`abs(dx_loc) > 0.040 m`, `abs(dy_loc) > 0.020 m`, `dz_loc < 0.100 m`) sistem `[HATA] Ilac kutusu hazneden dustu!` basar.
+   - Doğrulama Testleri: [test_simulation_driving.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_driving.py), [test_simulation_balance.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_balance.py) 
+3. **Telemetri ve Gerçek Açı (Ground Truth vs. Kestirim):**
+   - Telemetri dosyasında (`simulation_telemetry.csv`) birincil `pitch_deg` sütununda Webots fizik motorunun gerçek gövde eğim açısı (Ground Truth Roll around X) kaydedilir.
+   - Tamamlayıcı filtrenin (%98 Gyro + %2 Accel) ürettiği kestirim değeri `pitch_est_deg` sütununda ayrı olarak saklanır; böylece sensör gecikmesi ve dinamik ivmelenme hataları analiz edilebilir.
 4. **JGB37 DC Motor Ölü Bölgesi (Deadband) & Sürtünme Telafisi:**
    - 0.60 rad/s altındaki torklarda motorun statik sürtünmeden dolayı dönmediği stiction ölü bölgesi modellendi.
    - Kontrolcüye stiction feedforward ofseti (`compensate_deadband`, comp = 0.50 rad/s) eklenerek motorun eşik altı komut gecikmesi sıfırlandı.
    - Doğrulama Testi: [test_simulation_driving.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_driving.py)
-5. **Ev İçi Zemin Geçişleri & 4 mm Kablo Kanalı Aşma (Floor Obstacle):**
-   - Y = 0.85 m mesafesinde 4 mm yüksekliğinde ve 45 mm genişliğinde zemin kablo kanalı / halı eşiği yerleştirildi.
-   - 85 mm çapındaki kauçuk tekerlekler eşiğe çarptığında robot sendelemeden ve ilaç kutusunu düşürmeden engeli tırmanıp aşar.
-   - Doğrulama Testi: [test_simulation_driving.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_driving.py)
+5. **Zemin Modeli:**
+   - Standart düz zemin üzerinde pürüzsüz temas yüzeyi tanımlanmıştır. Zemin kablo kanalı engeli sadeleştirilerek kaldırılmıştır.

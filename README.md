@@ -146,8 +146,8 @@ Sistem mimarisi, Webots simülasyonunu kirletmemek ve gerçek zamanlı algoritma
 
 ### Temel Kontrol İlkeleri
 
-1. **İç Döngü (100 Hz):** Gövde eğim hatasından denge torku üretir (`KP_PITCH = 85.0`, `KD_PITCH = 2.40`).
-2. **Dış Döngü (20 Hz):** Sürüş komutu yokken robot durduğu koordinata çıpa atar (`KP_POS = 0.15`, `KI_POS = 0.02`).
+1. **İç Döngü (100 Hz):** Gövde eğim hatasından denge torku üretir (`KP_PITCH = 140.0`, `KD_PITCH = 3.60`).
+2. **Dış Döngü (100 Hz):** Sürüş komutu yokken robot durduğu koordinata çıpa atar (`KP_POS = 0.20`, `KI_POS = 0.015`, `MAX_POS_INT = 0.030 rad`). Sürüş anında hız hatasından hedef eğim açısı üretir (`KP_VEL = 0.045`, `MAX_PITCH_TARGET = 0.025 rad` ~ 1.43°).
 3. **Clamping Anti-Windup:** İntegral doyumu sınırlandırılmıştır (`MAX_POS_INT = 0.030 rad` ~ 1.7°); motor doyuma ulaştığında integral hesabı dondurulur.
 4. **Base-Omega Feedforward:** Gaz bırakıldığında tekerleklerin motor-freni yaparak gövdeyi öne fırlatmasını engellemek için anlık dönme hızı (`-v / R`) ileri besleme olarak eklenir.
 
@@ -164,25 +164,22 @@ Sistem mimarisi, Webots simülasyonunu kirletmemek ve gerçek zamanlı algoritma
 
 ## 8. Doğrulama ve Simülasyon Testleri
 
-Simülasyon dünyası ve kontrolcü performansı iki bütünleşik test paketiyle doğrulanır:
+Simülasyon dünyası ve kontrolcü performansı, şartname isterlerinin tamamını kapsayan **2 adet bütünleşik ve sadeleştirilmiş test paketiyle** doğrulanır:
 
 ```bash
-# 1. Statik Denge, Dış Dürtme ve Yük Güvenliği Testi (Modül A & E)
+# 1. Modül A (30s Denge & 4.0N Bozucu) ve Modül E (İlaç Güvenliği) Testi
 python tests/test_simulation_balance.py
 
-# 2. Sürüş, Dinamik Frenleme ve 4 mm Zemin Engeli Aşma Testi (Modül B & E)
+# 2. Modül B (1m Mesafe, 3s Duruş, Geri Sürüş) ve Modül E Testi
 python tests/test_simulation_driving.py
 ```
 
 ### Test Doğrulama Metrikleri
 
-| Test | Koşul | Başarı Kriteri | Sonuç |
-| :--- | :--- | :--- | :--- |
-| **Modül A (Statik Denge)** | 5 saniye bekleme | Ortalama eğim < 0.20°, sıfır kaçış | **BAŞARILI** (0.031°) |
-| **Bozucu Dürtme** | +4.0 N ve -4.0 N itme | < 1.5 saniyede dik dengeye dönüş | **BAŞARILI** (1.75°) |
-| **Modül B (Sürüş)** | W / S / Space sürüş | Sürüş hızı > 0.05 m/s, dinamik fren < 0.20 m/s | **BAŞARILI** |
-| **Zemin Engeli** | 4 mm zemin kablo kanalı | Devrilmeden tırmanıp aşma (eğim < 25°) | **BAŞARILI** (1.77°) |
-| **Modül E (İlaç Taşıma)** | Dinamik sürüş & dürtme | Aspirin kutusunun düşmeden taşınması | **BAŞARILI** |
+| Test Paketi | Kapsanan Şartname İsterleri | Başarı Kriteri | Ölçülen Sonuç | Durum |
+| :--- | :--- | :--- | :--- | :--- |
+| **Modül A & E (Denge & Bozucu)** | • Kesintisiz 30 saniye statik denge<br>• +4.0 N ve -4.0 N itme darbeleri<br>• Aspirin kutusu yerel eksen takibi | • time >= 29.8s, step >= 2990<br>• Statik eğim < 0.20°<br>• Darbe sonrası toparlanma < 2.0°<br>• Kutu hazneden düşmez | • Ortalama statik eğim: **0.070°**<br>• Darbe anı azami eğim: **6.98°**<br>• 1. Toparlanma: **0.60°**, 2.: **0.71°**<br>• Süre: **30.00 saniye** | **BAŞARILI** |
+| **Modül B & E (Sürüş & Duruş)** | • 0.8 m – 1.2 m mesafe katetme<br>• Hedefte 3 sn hareketsiz duruş<br>• Geri sürüş (negatif hız)<br>• Manevralarda ilaç kutusu güvenliği | • time >= 17.3s, step >= 1730<br>• Net mesafe: 0.80 - 1.20 m<br>• Duruş fazı hızı < 0.02 m/s<br>• Geri sürüş hızı < -0.05 m/s | • Net mesafe: **+1.025 m**<br>• 3 sn duruş ort. hız: **0.0090 m/s**<br>• Geri sürüş ort. hız: **-0.086 m/s**<br>• Süre: **17.50 saniye** | **BAŞARILI** |
 
 ---
 
@@ -197,8 +194,8 @@ webots webots/worlds/cdtp_balance_world.wbt
 ### Klavye ile Teleoperasyon Kontrolleri
 
 Simülasyon penceresine tıkladıktan sonra aşağıdaki tuşlarla robot kontrol edilir:
-- **W / Yukarı Ok:** İleri sürüş (+0.30 m/s)
-- **S / Aşağı Ok:** Geri sürüş (-0.30 m/s)
+- **W / Yukarı Ok:** İleri sürüş (güvenli nominal hız)
+- **S / Aşağı Ok:** Geri sürüş (güvenli nominal hız)
 - **A / Sol Ok:** Sola yumuşak dönüş (~34°/s)
 - **D / Sağ Ok:** Sağa yumuşak dönüş (~34°/s)
 - **P Tuşu:** Robota 4.0 N harici bozucu itme kuvveti uygula

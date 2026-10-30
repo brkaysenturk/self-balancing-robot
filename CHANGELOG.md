@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **Simulation Fall Protection Deadlock:** Moved keyboard sampling and reset key ('R') evaluation before the fall threshold check in 'balance_controller.py', allowing physics recovery even when tilted beyond limit.
+- **Medicine Box Drop Coordinate Reference:** Converted medicine box tracking from world frame to the robot local body frame via the transpose of the rotation matrix (R^T), eliminating false drop triggers during pitch tilt.
+- **Telemetry Ground Truth Pitch Logging:** Separated true ground truth body roll ('pitch_deg') from complementary filter estimation ('pitch_est_deg'), enabling precise sensor lag and dynamic acceleration error analysis.
+- **Backward Driving Negative Velocity:** Corrected reverse driving velocity direction and assertion bounds to ensure negative linear speed is strictly verified.
+- **Test Suite Early Exit Vulnerability:** Added process return code validation ('res.returncode == 0') and strict time/step completion assertions ('time_s >= ...', 'step >= ...') across all test runners.
+
+### Changed
+- **Consolidated Test Architecture:** Merged standalone spec test scripts into two rigorous test suites: 'test_simulation_balance.py' (30s static balance, 4.0 N dual push, and medicine security) and 'test_simulation_driving.py' (0.8 - 1.2 m distance, 3s stop, reverse drive, and medicine security).
+- **Floor Environment Simplification:** Removed floor cable conduit from 'cdtp_balance_world.wbt' to focus on standard planar indoor floor dynamics.
+- **Controller Speed Configuration:** Parameterized nominal driving speed via 'DRIVE_SPEED' in 'config.py'.
+
+### Added
 - **Forward Runaway on Throttle Release (W Key):** Fixed forward pitch-over acceleration caused by lack of rolling speed feedforward when braking. Added base wheel angular velocity feedforward (`base_omega = - v / R`) and deceleration-based target pitch generation.
 - **Conditional Integration & Clamping Anti-Windup:** Implemented saturation-aware conditional integration and strict clamping limits (`MAX_POS_INT = 0.040 rad`) on the outer loop position integrator to eliminate cascade windup and prevent runaway backward drift.
 - **Discrete 50 Hz Chatter Elimination:** Applied a low-pass filter on the gyro rate (`filtered_rate = 0.70 * filtered_rate + 0.30 * gyro_vals[0]`) to remove discrete Nyquist oscillation at 100 Hz sampling.
