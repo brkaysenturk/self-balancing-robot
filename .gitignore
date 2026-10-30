@@ -39,3 +39,6 @@ temp/
 webots/worlds/.*.jpg
 webots/worlds/.*.png
 .wbcache/
+
+webots/worlds/.*.wbproj
+*.wbproj

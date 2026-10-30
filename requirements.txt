@@ -1,0 +1,4 @@
+# YTÜ ÇDTP İki Tekerlekli Denge Robotu - Python Bağımlılıkları
+optuna>=3.0.0
+numpy>=1.20.0
+matplotlib>=3.5.0

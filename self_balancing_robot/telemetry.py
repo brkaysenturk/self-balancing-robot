@@ -9,14 +9,14 @@ pos_m: Robotun katettiği net odometri mesafesi (metre).
 import os
 
 class TelemetryLogger:
-    def __init__(self, filename: str = "simulation_telemetry.csv"):
+    def __init__(self, filename: str = "simulation_telemetry.csv", command_unit: str = "rads"):
         log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "logs"))
         os.makedirs(log_dir, exist_ok=True)
         self.filepath = os.path.join(log_dir, filename)
         self.file = None
         try:
             self.file = open(self.filepath, "w", encoding="utf-8")
-            self.file.write("time_s,step,pitch_deg,pitch_est_deg,pitch_rate_dps,vel_meas_mps,vel_target_mps,cmd_left_rads,cmd_right_rads,pos_m\n")
+            self.file.write(f"time_s,step,pitch_deg,pitch_est_deg,pitch_rate_dps,vel_meas_mps,vel_target_mps,cmd_left_{command_unit},cmd_right_{command_unit},pos_m\n")
         except Exception as e:
             print(f"[UYARI] Telemetri dosyasi acilamadi: {e}")
 

@@ -11,11 +11,27 @@
 [![Sensors](https://img.shields.io/badge/Sensors-MPU6050%206--DoF-00AEEF.svg)](https://invensense.tdk.com/)
 [![Control](https://img.shields.io/badge/Control-Cascade%20Dual--Loop%20PID-orange.svg)](webots/controllers/balance_controller/balance_controller.py)
 [![Comms](https://img.shields.io/badge/Comms-ESP--NOW%202.4GHz-brightgreen.svg)](https://www.espressif.com/en/solutions/low-power-solutions/esp-now)
-[![Tests](https://img.shields.io/badge/Tests-2%20passed-brightgreen.svg)](tests/)
+[![Simulation Tests](https://img.shields.io/badge/Simulation%20Tests-3%20passed-brightgreen.svg)](tests/)
 
 Bu proje; Yıldız Teknik Üniversitesi Elektrik-Elektronik Fakültesi Çok Disiplinli Tasarım Projesi (ÇDTP) kapsamında geliştirilen, **ters sarkaç (Inverted Pendulum) prensibiyle iki tekerleği üzerinde aktif dengelenen, giyilebilir eldiven arayüzüyle yönlendirilen ve ev içinde standart bir ilaç kutusunu otonom olarak taşıyıp şarj istasyonuna yanaşan mobil sağlık asistanı robotudur**.
 
 > **English Overview:** Autonomous Two-Wheeled Self-Balancing Indoor Patient Support and Medicine Carrier Robot developed as a senior multidisciplinary design project at Yildiz Technical University. It features an active inverted pendulum stabilization architecture, wearable gesture-control glove teleoperation via low-latency ESP-NOW, an autonomous 38 kHz infrared homing dock system, physical payload security (standard blister medicine box), and a digital twin validated in Webots R2025a with cascade dual-loop PID, base-omega feedforward, and clamping anti-windup.
+
+---
+
+## Proje ve Şartname Geliştirme Durumu
+
+| Şartname Modülü | Kapsam | Durum | Doğrulama Ortamı |
+| :--- | :--- | :--- | :--- |
+| **Modül A (Statik Denge)** | Dış destek olmadan 30 saniye dik denge ve harici 4.0 N darbe sönümleme | **DOĞRULANDI** | Webots R2025a (`tests/test_simulation_balance.py`) |
+| **Modül B (Sürüş & Duruş)** | 0.8 m – 1.2 m mesafe katetme, 3 sn hareketsiz duruş ve geri sürüş | **DOĞRULANDI** | Webots R2025a (`tests/test_simulation_driving.py`) |
+| **Modül B (Giyilebilir Eldiven)** | ESP32 + MPU-6050 ile ESP-NOW üzerinden kablosuz el jesti kontrolü | **GELİŞTİRİLİYOR** | `esp32/glove/` FreeRTOS firmware |
+| **Modül C (Otonom IR Şarj)** | 38 kHz diferansiyel IR nirengisiyle istasyona yaklaşma ve kilitlenme | **TASARIM AŞAMASINDA** | 2x TSOP38438 IR gözleri + Katman 1 temas pedleri |
+| **Modül D (Şarj Göstergesi)** | Fiziksel temasla şarj başlangıcı/ayrılış durum LED'i | **DONANIM ŞEMASI HAZIR** | Katman 4 durum LED devresi |
+| **Modül E (İlaç Kutusu Taşıma)** | Standart kapalı karton ilaç (Aspirin) kutusunun düşmeden taşınması | **DOĞRULANDI** | Katman 4 dinamik hazne + yerel eksen denetimi |
+| **DC Motor Tork/PWM Modeli** | TB6612 PWM, JGB37 Ters-EMK, armatür direnci ve patinaj sınırlandırması | **DOĞRULANDI** | Webots R2025a (`tests/test_simulation_voltage.py`) |
+| **Modül 5.2 (Mobil Doğrulama)** | Telefon kamerasıyla süre, eğim ve konum ölçüm arayüzü | **PLANLAMA AŞAMASINDA** | `app/` mobil değerlendirme uygulaması |
+
 
 ---
 
@@ -138,11 +154,13 @@ Motor sürücü (TB6612FNG) Katman 1 tabanına yerleştirilmiştir. Bu sayede mo
 
 Sistem mimarisi, Webots simülasyonunu kirletmemek ve gerçek zamanlı algoritmaları bağımsız tutmak için `self_balancing_robot` çekirdek paketi üzerine kurulmuştur:
 
-- [config.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/config.py): Robot fiziksel parametreleri, kazançlar ve emniyet sınırları.
-- [sensor_fusion.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/sensor_fusion.py): Gürültü enjeksiyonu ve %98 Gyro + %2 İvmeölçer Tamamlayıcı Filtresi.
-- [cascade_controller.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/cascade_controller.py): Kaskad PID, Base-Omega İleri Beslemesi, Clamping Anti-Windup ve Motor Deadband Telafisi.
-- [telemetry.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/telemetry.py): CSV telemetri kayıt yöneticisi.
-- [balance_controller.py](file:///c:/YTU/self-balancing-robot/webots/controllers/balance_controller/balance_controller.py): Webots API'sini bağlayan ince adaptör (shim).
+- [config.py](self_balancing_robot/config.py): Robot fiziksel parametreleri, kazançlar ve emniyet sınırları.
+- [sensor_fusion.py](self_balancing_robot/sensor_fusion.py): Gürültü enjeksiyonu ve %98 Gyro + %2 İvmeölçer Tamamlayıcı Filtresi.
+- [cascade_controller.py](self_balancing_robot/cascade_controller.py): Kaskad PID, Base-Omega İleri Beslemesi, Clamping Anti-Windup ve Motor Deadband Telafisi.
+- [dc_motor_model.py](self_balancing_robot/dc_motor_model.py): JGB37 DC Motor armatür direnci, Ters-EMK, tork katsayısı ve patinaj sınırlaması.
+- [telemetry.py](self_balancing_robot/telemetry.py): CSV telemetri kayıt yöneticisi.
+- [balance_controller.py](webots/controllers/balance_controller/balance_controller.py): Webots hız sürümlü referans kontrolcü adaptörü.
+- [voltage_controller.py](webots/controllers/voltage_controller/voltage_controller.py): Webots ESP32 PWM / Gerilim (Tork) tabanlı fiziksel kontrolcü adaptörü.
 
 ### Temel Kontrol İlkeleri
 
@@ -172,6 +190,9 @@ python tests/test_simulation_balance.py
 
 # 2. Modül B (1m Mesafe, 3s Duruş, Geri Sürüş) ve Modül E Testi
 python tests/test_simulation_driving.py
+
+# 3. Gerçekçi DC Motor Modeli ve TB6612 Gerilim/PWM (Tork) Testi
+python tests/test_simulation_voltage.py
 ```
 
 ### Test Doğrulama Metrikleri
@@ -180,10 +201,25 @@ python tests/test_simulation_driving.py
 | :--- | :--- | :--- | :--- | :--- |
 | **Modül A & E (Denge & Bozucu)** | • Kesintisiz 30 saniye statik denge<br>• +4.0 N ve -4.0 N itme darbeleri<br>• Aspirin kutusu yerel eksen takibi | • time >= 29.8s, step >= 2990<br>• Statik eğim < 0.20°<br>• Darbe sonrası toparlanma < 2.0°<br>• Kutu hazneden düşmez | • Ortalama statik eğim: **0.070°**<br>• Darbe anı azami eğim: **6.98°**<br>• 1. Toparlanma: **0.60°**, 2.: **0.71°**<br>• Süre: **30.00 saniye** | **BAŞARILI** |
 | **Modül B & E (Sürüş & Duruş)** | • 0.8 m – 1.2 m mesafe katetme<br>• Hedefte 3 sn hareketsiz duruş<br>• Geri sürüş (negatif hız)<br>• Manevralarda ilaç kutusu güvenliği | • time >= 17.3s, step >= 1730<br>• Net mesafe: 0.80 - 1.20 m<br>• Duruş fazı hızı < 0.02 m/s<br>• Geri sürüş hızı < -0.05 m/s | • Net mesafe: **+1.025 m**<br>• 3 sn duruş ort. hız: **0.0090 m/s**<br>• Geri sürüş ort. hız: **-0.086 m/s**<br>• Süre: **17.50 saniye** | **BAŞARILI** |
+| **DC Motor PWM & Tork Testi** | • TB6612 gerilim/PWM komutları<br>• JGB37 Ters-EMK ve sürtünme telafisi<br>• 30s denge ve 1.5N darbe toparlanma | • time >= 29.8s, step >= 2990<br>• Statik ortalama eğim < 0.35°<br>• Patinajsız toparlanma<br>• Kutu hazneden düşmez | • Ortalama statik eğim: **0.117°**<br>• Darbe sonrası toparlanma: **-0.01°**<br>• Patinaj/kayma: **Önlendi**<br>• Süre: **30.00 saniye** | **BAŞARILI** |
 
 ---
 
 ## 9. Hızlı Başlangıç ve Kullanım
+
+### Gereksinimler ve Kurulum
+
+1. **Python 3.10 - 3.12:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. **Webots R2025a:**
+   Simülasyon ortamı için [Cyberbotics Webots R2025a](https://cyberbotics.com/) kurulu olmalıdır.
+   Standart dışı bir konuma kurulduysa `WEBOTS_EXECUTABLE` ortam değişkeni tanımlanabilir:
+   ```bash
+   # Windows PowerShell
+   $env:WEBOTS_EXECUTABLE = "C:\Program Files\Webots\msys64\mingw64\bin\webots.exe"
+   ```
 
 ### Webots Simülasyonunu Açma
 
@@ -235,10 +271,10 @@ c:\YTU\self-balancing-robot\
 
 ## 11. Dokümantasyon ve Proje Hafızası
 
-- **Proje Teknik Hafızası & Karar Günlüğü:** [AGENTS.md](file:///c:/YTU/self-balancing-robot/AGENTS.md)
-- **Sürüm Değişiklik Geçmişi:** [CHANGELOG.md](file:///c:/YTU/self-balancing-robot/CHANGELOG.md)
-- **Resmi Şartname Belgesi:** [YTU_EEF_CDTP_Ev_Ici_Ilac_Tasima_Denge_Robotu_TR_v14.pdf](file:///c:/YTU/self-balancing-robot/docs/specs/YTU_EEF_CDTP_Ev_Ici_Ilac_Tasima_Denge_Robotu_TR_v14.pdf)
-- **Lazer Kesim Şablonu:** [pleksi_katmanlari.dxf](file:///c:/YTU/self-balancing-robot/docs/cad/pleksi_katmanlari.dxf) ve [pleksi_kesim_sablonu.svg](file:///c:/YTU/self-balancing-robot/docs/cad/pleksi_kesim_sablonu.svg)
+- **Proje Teknik Hafızası & Karar Günlüğü:** [AGENTS.md](AGENTS.md)
+- **Sürüm Değişiklik Geçmişi:** [CHANGELOG.md](CHANGELOG.md)
+- **Resmi Şartname Belgesi:** [YTU_EEF_CDTP_Ev_Ici_Ilac_Tasima_Denge_Robotu_TR_v14.pdf](docs/specs/YTU_EEF_CDTP_Ev_Ici_Ilac_Tasima_Denge_Robotu_TR_v14.pdf)
+- **Lazer Kesim Şablonu:** [pleksi_katmanlari.dxf](docs/cad/pleksi_katmanlari.dxf) ve [pleksi_kesim_sablonu.svg](docs/cad/pleksi_kesim_sablonu.svg)
 
 ---
 

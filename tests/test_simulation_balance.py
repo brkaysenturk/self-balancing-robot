@@ -10,11 +10,45 @@ import subprocess
 import os
 import sys
 import csv
+import shutil
+
+def get_webots_executable() -> str:
+    """Webots çalıştırılabilir dosya yolunu sistem ve ortam değişkenlerinden bulur."""
+    env_path = os.environ.get("WEBOTS_EXECUTABLE") or os.environ.get("WEBOTS_HOME")
+    if env_path:
+        if os.path.isfile(env_path):
+            return env_path
+        candidate_win = os.path.join(env_path, "msys64", "mingw64", "bin", "webots.exe")
+        if os.path.isfile(candidate_win):
+            return candidate_win
+        candidate_nix = os.path.join(env_path, "bin", "webots")
+        if os.path.isfile(candidate_nix):
+            return candidate_nix
+
+    which_path = shutil.which("webots")
+    if which_path and os.path.isfile(which_path):
+        return which_path
+
+    candidates = [
+        r"C:\Program Files\Webots\msys64\mingw64\bin\webots.exe",
+        "/usr/local/bin/webots",
+        "/usr/bin/webots",
+        "/snap/bin/webots",
+        "/Applications/Webots.app/Contents/MacOS/webots",
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+
+    raise FileNotFoundError(
+        "Webots çalıştırılabilir dosyası bulunamadı! Lütfen WEBOTS_EXECUTABLE ortam değişkenini ayarlayın."
+    )
+
 
 def run_balance_test():
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     world_path = os.path.join(project_root, "webots", "worlds", "cdtp_balance_world.wbt")
-    webots_exe = r"C:\Program Files\Webots\msys64\mingw64\bin\webots.exe"
+    webots_exe = get_webots_executable()
 
     telemetry_path = os.path.join(project_root, "logs", "simulation_telemetry.csv")
     if os.path.exists(telemetry_path):
@@ -31,7 +65,7 @@ def run_balance_test():
     env.pop("TEST_DRIVE_COMMANDS", None)
 
     print("=" * 65)
-    print("YTU CDTP - Modül A (30s Denge + 4.0N Dürtme) & Modül E Testi")
+    print("Modül A (30s Denge + 4.0N Dürtme) & Modül E Testi")
     print("Test Kapsamı: 30s Statik Denge + 4.0N Çift Yönlü İmpuls + İlaç Güvenliği")
     print("=" * 65)
 
