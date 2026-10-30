@@ -1,5 +1,5 @@
 """
-YTU EEF CDTP - Bütünleşik Simülasyon Doğrulama Testi
+Bütünleşik Simülasyon Doğrulama Testi
 Webots simülasyonunu çalıştırarak şartname isterlerini ve dinamik performansı doğrular:
 1. Şartname Modül A (Statik Denge): 5 saniye dik konum ve mikro-salınım kararlılığı.
 2. Harici Bozucu Dayanıklılığı: +4.0 N ve -4.0 N itme darbelerinden sonra toparlanma.
@@ -12,7 +12,8 @@ import sys
 import csv
 
 def run_test():
-    world_path = os.path.abspath(r"c:\YTU\CDTP\webots\worlds\cdtp_balance_world.wbt")
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    world_path = os.path.join(project_root, "webots", "worlds", "cdtp_balance_world.wbt")
     webots_exe = r"C:\Program Files\Webots\msys64\mingw64\bin\webots.exe"
 
     env = os.environ.copy()
@@ -39,7 +40,7 @@ def run_test():
         print("=== UYARILAR / HATALAR ===")
         print(res.stderr)
 
-    telemetry_path = os.path.abspath(r"c:\YTU\CDTP\logs\simulation_telemetry.csv")
+    telemetry_path = os.path.join(project_root, "logs", "simulation_telemetry.csv")
     if not os.path.exists(telemetry_path):
         print(f"[HATA] Telemetri dosyasi bulunamadi: {telemetry_path}")
         return False

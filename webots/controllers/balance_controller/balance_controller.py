@@ -1,16 +1,25 @@
 """
-YTU EEF CDTP - İki Tekerlekli Denge Robotu Webots Ana Kontrolcüsü
+İki Tekerlekli Denge Robotu Webots Ana Kontrolcüsü
 Modüler mimari: config, sensor_fusion, cascade_controller ve telemetry modüllerini koordine eder.
 """
 
 import os
+import sys
 import math
+from pathlib import Path
 from controller import Supervisor, Keyboard
 
-from config import RobotConfig
-from sensor_fusion import SensorFusion
-from cascade_controller import CascadeBalanceController
-from telemetry import TelemetryLogger
+# Proje kökünü sys.path'e ekle (self_balancing_robot paketini yükler)
+project_root = Path(__file__).resolve().parents[3]
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+from self_balancing_robot import (
+    RobotConfig,
+    SensorFusion,
+    CascadeBalanceController,
+    TelemetryLogger,
+)
 
 def parse_simulated_key(step: int, seq_str: str) -> int:
     """Ortam değişkeninden gelen otomatik test sürüş komutlarını ayrıştırır."""

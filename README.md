@@ -134,15 +134,15 @@ Motor sürücü (TB6612FNG) Katman 1 tabanına yerleştirilmiştir. Bu sayede mo
 
 ---
 
-## 6. Yazılım ve Kontrol Teorisi
+## 6. Yazılım ve Kontrol Mimarisi
 
-Webots simülasyonu ve ESP32 firmware mimarisi modüler olarak tasarlanmıştır:
+Sistem mimarisi, Webots simülasyonunu kirletmemek ve gerçek zamanlı algoritmaları bağımsız tutmak için `self_balancing_robot` çekirdek paketi üzerine kurulmuştur:
 
-- [config.py](file:///c:/YTU/CDTP/webots/controllers/balance_controller/config.py): Robot fiziksel parametreleri, kazançlar ve emniyet sınırları.
-- [sensor_fusion.py](file:///c:/YTU/CDTP/webots/controllers/balance_controller/sensor_fusion.py): Gürültü enjeksiyonu ve %98 Gyro + %2 İvmeölçer Tamamlayıcı Filtresi.
-- [cascade_controller.py](file:///c:/YTU/CDTP/webots/controllers/balance_controller/cascade_controller.py): Kaskad PID, Base-Omega İleri Beslemesi, Clamping Anti-Windup ve Motor Deadband Telafisi.
-- [telemetry.py](file:///c:/YTU/CDTP/webots/controllers/balance_controller/telemetry.py): CSV telemetri kayıt yöneticisi.
-- [balance_controller.py](file:///c:/YTU/CDTP/webots/controllers/balance_controller/balance_controller.py): Ana döngü ve olay orkestrasyonu.
+- [config.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/config.py): Robot fiziksel parametreleri, kazançlar ve emniyet sınırları.
+- [sensor_fusion.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/sensor_fusion.py): Gürültü enjeksiyonu ve %98 Gyro + %2 İvmeölçer Tamamlayıcı Filtresi.
+- [cascade_controller.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/cascade_controller.py): Kaskad PID, Base-Omega İleri Beslemesi, Clamping Anti-Windup ve Motor Deadband Telafisi.
+- [telemetry.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/telemetry.py): CSV telemetri kayıt yöneticisi.
+- [balance_controller.py](file:///c:/YTU/self-balancing-robot/webots/controllers/balance_controller/balance_controller.py): Webots API'sini bağlayan ince adaptör (shim).
 
 ### Temel Kontrol İlkeleri
 
@@ -210,7 +210,7 @@ Simülasyon penceresine tıkladıktan sonra aşağıdaki tuşlarla robot kontrol
 ## 10. Dizin Yapısı
 
 ```text
-c:\YTU\CDTP\
+c:\YTU\self-balancing-robot\
 ├── docs/                      # Dokümantasyon ve şartnameler
 │   ├── specs/                 # Şartname, akademik takvim ve tanıtım PDF'leri
 │   ├── reports/               # FR-1558 yönetim planı ve proje raporları
@@ -238,10 +238,10 @@ c:\YTU\CDTP\
 
 ## 11. Dokümantasyon ve Proje Hafızası
 
-- **Proje Teknik Hafızası & Karar Günlüğü:** [AGENTS.md](file:///c:/YTU/CDTP/AGENTS.md)
-- **Sürüm Değişiklik Geçmişi:** [CHANGELOG.md](file:///c:/YTU/CDTP/CHANGELOG.md)
-- **Resmi Şartname Belgesi:** [YTU_EEF_CDTP_Ev_Ici_Ilac_Tasima_Denge_Robotu_TR_v14.pdf](file:///c:/YTU/CDTP/docs/specs/YTU_EEF_CDTP_Ev_Ici_Ilac_Tasima_Denge_Robotu_TR_v14.pdf)
-- **Lazer Kesim Şablonu:** [pleksi_katmanlari.dxf](file:///c:/YTU/CDTP/docs/cad/pleksi_katmanlari.dxf) ve [pleksi_kesim_sablonu.svg](file:///c:/YTU/CDTP/docs/cad/pleksi_kesim_sablonu.svg)
+- **Proje Teknik Hafızası & Karar Günlüğü:** [AGENTS.md](file:///c:/YTU/self-balancing-robot/AGENTS.md)
+- **Sürüm Değişiklik Geçmişi:** [CHANGELOG.md](file:///c:/YTU/self-balancing-robot/CHANGELOG.md)
+- **Resmi Şartname Belgesi:** [YTU_EEF_CDTP_Ev_Ici_Ilac_Tasima_Denge_Robotu_TR_v14.pdf](file:///c:/YTU/self-balancing-robot/docs/specs/YTU_EEF_CDTP_Ev_Ici_Ilac_Tasima_Denge_Robotu_TR_v14.pdf)
+- **Lazer Kesim Şablonu:** [pleksi_katmanlari.dxf](file:///c:/YTU/self-balancing-robot/docs/cad/pleksi_katmanlari.dxf) ve [pleksi_kesim_sablonu.svg](file:///c:/YTU/self-balancing-robot/docs/cad/pleksi_kesim_sablonu.svg)
 
 ---
 

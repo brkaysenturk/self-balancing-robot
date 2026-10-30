@@ -1,5 +1,5 @@
 """
-YTU EEF CDTP - Simülasyon Telemetri Kaydedicisi
+Simülasyon Telemetri Kaydedicisi
 Zaman serisi telemetri verilerini logs/simulation_telemetry.csv dosyasına yazar.
 """
 
@@ -7,7 +7,7 @@ import os
 
 class TelemetryLogger:
     def __init__(self, filename: str = "simulation_telemetry.csv"):
-        log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "logs"))
+        log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "logs"))
         os.makedirs(log_dir, exist_ok=True)
         self.filepath = os.path.join(log_dir, filename)
         self.file = None

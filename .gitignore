@@ -34,3 +34,8 @@ logs/*.csv
 scratch/
 temp/
 
+
+# Webots Generated Thumbnails & Cache
+webots/worlds/.*.jpg
+webots/worlds/.*.png
+.wbcache/

@@ -1,5 +1,5 @@
 """
-YTU EEF CDTP - Robot ve Simülasyon Konfigürasyonu
+Robot ve Simülasyon Konfigürasyonu
 Fiziksel boyutlar, sensör gürültüleri, kontrolör kazançları ve sınırlar.
 """
 
@@ -13,17 +13,17 @@ class RobotConfig:
     MAX_VELOCITY: float = 30.0     # rad/s azami motor hızı (~286 RPM)
     FALL_LIMIT_DEG: float = 45.0   # Devrilme emniyet sınırı (derece)
 
-    # İç Döngü (Eğim Açısı PID - 100 Hz)
-    KP_PITCH: float = 85.0         # Açı oransal kazancı
-    KD_PITCH: float = 2.40         # Açı türevsel kazancı
+    # İç Döngü (Eğim Açısı PID - 100 Hz - Optuna ile Optimize Edildi)
+    KP_PITCH: float = 140.0        # Açı oransal kazancı
+    KD_PITCH: float = 3.60         # Açı türevsel kazancı
 
     # Sürüş Döngüsü (Hız Hatası -> Hedef Eğim)
-    KP_VEL: float = 0.06           # Hız hatası hedef eğim kazancı
+    KP_VEL: float = 0.045          # Hız hatası hedef eğim kazancı
     MAX_PITCH_TARGET: float = 0.025 # ~1.4 derece azami hedef eğim açısı
 
     # Duruş / Konum Tutma Döngüsü (Clamping Anti-Windup)
-    KP_POS: float = 0.15           # Konum hatası kazancı (rad/m)
-    KI_POS: float = 0.02           # Konum integral kazancı (rad/m-s)
+    KP_POS: float = 0.20           # Konum hatası kazancı (rad/m)
+    KI_POS: float = 0.015          # Konum integral kazancı (rad/m-s)
     MAX_POS_INT: float = 0.030     # Azami konum integrali sınırı (~1.7 derece)
 
     # Dönüş Kazancı (Yumuşak Diferansiyel Dönüş)

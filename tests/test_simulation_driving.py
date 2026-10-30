@@ -1,5 +1,5 @@
 """
-YTU EEF CDTP - Bütünleşik Sürüş, Dinamik Frenleme ve Engel Aşma Testi
+Bütünleşik Sürüş, Dinamik Frenleme ve Engel Aşma Testi
 Robotun şartname isterleri ve manevra kabiliyetini doğrular:
 1. Şartname Modül B: İleri (+0.30 m/s), geri (-0.30 m/s) ve kontrollü dinamik frenleme.
 2. Zemin Engeli Aşma: Y=0.85 m mesafesindeki 4 mm zemin kablo kanalını devrilmeden geçme.
@@ -12,7 +12,8 @@ import sys
 import csv
 
 def run_driving_test():
-    world_path = os.path.abspath(r"c:\YTU\CDTP\webots\worlds\cdtp_balance_world.wbt")
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    world_path = os.path.join(project_root, "webots", "worlds", "cdtp_balance_world.wbt")
     webots_exe = r"C:\Program Files\Webots\msys64\mingw64\bin\webots.exe"
 
     env = os.environ.copy()
@@ -39,7 +40,7 @@ def run_driving_test():
         print("=== UYARILAR / HATALAR ===")
         print(res.stderr)
 
-    telemetry_path = os.path.abspath(r"c:\YTU\CDTP\logs\simulation_telemetry.csv")
+    telemetry_path = os.path.join(project_root, "logs", "simulation_telemetry.csv")
     if not os.path.exists(telemetry_path):
         print(f"[HATA] Telemetri dosyasi bulunamadi: {telemetry_path}")
         return False

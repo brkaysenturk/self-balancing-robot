@@ -1,5 +1,5 @@
 """
-YTU EEF CDTP - Tamamlayıcı Filtre & Sensör Füzyonu
+Tamamlayıcı Filtre & Sensör Füzyonu
 MPU-6050 jiroskop ve ivmeölçer verilerini birleştirerek gürültüden arındırılmış gövde eğim açısını kestirir.
 ESP32 donanım firmware algoritmasıyla birebir uyumludur.
 """

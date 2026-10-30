@@ -13,13 +13,13 @@
   Tüm matematik, açılar, birimler ve formüller düz metin (plain text) olarak yazılacaktır:
   Örnek: `45 derece`, `5.0 saniye`, `30 FPS`, `50 Hz`, `Kp = 0.16`, `v_max = A * w`, `+/- 45 derece`, `tau = 45 ms`.
 - **DOKÜMANTASYONA VE COMMITLERE ANLIK KONUŞMA SAYILARI YAZILMAYACAK:**
-- **DOSYA BAĞLANTILARI:** Kod ve tasarım dosyalarına her zaman GitHub markdown link formatında (`[dosya_adi](file:///c:/YTU/CDTP/...)`) tıklanabilir referans verilecektir.
+- **DOSYA BAĞLANTILARI:** Kod ve tasarım dosyalarına her zaman GitHub markdown link formatında (`[dosya_adi](file:///c:/YTU/self-balancing-robot/...)`) tıklanabilir referans verilecektir.
 
 ---
 
 ## 2. Proje Tanımı ve Şartname İsterleri (YTÜ EEF ÇDTP)
 
-- **Resmi Şartname Belgesi:** [YTU_EEF_CDTP_Ev_Ici_Ilac_Tasima_Denge_Robotu_TR_v14.pdf](file:///c:/YTU/CDTP/docs/specs/YTU_EEF_CDTP_Ev_Ici_Ilac_Tasima_Denge_Robotu_TR_v14.pdf)
+- **Resmi Şartname Belgesi:** [YTU_EEF_CDTP_Ev_Ici_Ilac_Tasima_Denge_Robotu_TR_v14.pdf](file:///c:/YTU/self-balancing-robot/docs/specs/YTU_EEF_CDTP_Ev_Ici_Ilac_Tasima_Denge_Robotu_TR_v14.pdf)
 - **Ana Hedef:** Kendi dengesini aktif olarak sağlayan iki tekerlekli robot (Inverted Pendulum); giyilebilir eldiven arayüzüyle yönlendirilerek standart bir ilaç (Aspirin vb.) kutusunu ev içinde taşır ve ardından insan müdahalesi olmadan otonom biçimde şarj istasyonuna yerleşip şarjı başlatır.
 
 ### Şartname Modülleri ve Başarı Metrikleri
@@ -128,18 +128,26 @@
 ## 6. Dizin Ağacı ve Dosya Yerleşimi
 
 ```text
-c:\YTU\CDTP\
+c:\YTU\self-balancing-robot\
 ├── .vscode/               # VSCode ayarları ve dosya format kuralları
 ├── docs/                  # Proje dokümantasyonu ve şartnameler
 │   ├── specs/             # Resmi şartname, takvim ve tanıtım PDF'leri
 │   ├── reports/           # FR-1558 yönetim planı ve proje raporları
 │   ├── cad/               # Lazer kesim DXF ve teknik SVG şablonları (135x95 mm)
 │   └── assets/            # Flowchart, sistem mimarisi ve görsel renderlar
+├── self_balancing_robot/  # Bağımsız çekirdek robot yazılım paketi
+│   ├── __init__.py        # Paket dışa aktarımları
+│   ├── config.py          # Robot parametreleri, PID kazançları ve eşikler
+│   ├── sensor_fusion.py   # Tamamlayıcı filtre ve sensör gürültüsü
+│   ├── cascade_controller.py # Kaskad PID, anti-windup ve sürtünme telafisi
+│   └── telemetry.py       # Telemetri veri kaydedicisi
 ├── esp32/                 # Gömülü yazılımlar (ESP32)
 │   ├── robot/             # İki tekerlekli robot FreeRTOS/PID kontrol firmware'i
 │   └── glove/             # Giyilebilir kontrol eldiveni ESP-NOW firmware'i
 ├── app/                   # Şartname 5.2 Mobil / Kamera Değerlendirme Uygulaması
 ├── webots/                # Webots R2025a simülasyon dünyası ve kontrolcüleri
+│   ├── controllers/       # İnce kontrolcü adaptörleri (self_balancing_robot paketini yükler)
+│   └── worlds/            # Webots dünya dosyaları (12x12 m oda, arena, engeller)
 ├── analysis/              # Telemetri, kontrol analizi ve grafikler
 ├── tests/                 # Sensör, motor, enkoder ve bağlantı doğrulama testleri
 ├── logs/                  # Telemetri ve test günlükleri
@@ -155,14 +163,15 @@ c:\YTU\CDTP\
 
 ## 7. Webots Simülasyon Dünyası ve Kontrolcü Mimarisi
 
-- **Dünya Dosyası:** [cdtp_balance_world.wbt](file:///c:/YTU/CDTP/webots/worlds/cdtp_balance_world.wbt)
-- **Kontrolcü Modülleri:**
-  - Ana Koordinatör: [balance_controller.py](file:///c:/YTU/CDTP/webots/controllers/balance_controller/balance_controller.py)
-  - Robot & Kontrolör Parametreleri: [config.py](file:///c:/YTU/CDTP/webots/controllers/balance_controller/config.py)
-  - MPU-6050 Tamamlayıcı Filtre & Sensör Füzyonu: [sensor_fusion.py](file:///c:/YTU/CDTP/webots/controllers/balance_controller/sensor_fusion.py)
-  - Çift Döngülü Kaskad PID & Motor Telafisi: [cascade_controller.py](file:///c:/YTU/CDTP/webots/controllers/balance_controller/cascade_controller.py)
-  - Zaman Serisi Telemetri Kaydedici: [telemetry.py](file:///c:/YTU/CDTP/webots/controllers/balance_controller/telemetry.py)
-- **Doğrulama Testleri:** [test_simulation_balance.py](file:///c:/YTU/CDTP/tests/test_simulation_balance.py) (Statik Denge, Dış Dürtme ve İlaç Kutusu Taşıma), [test_simulation_driving.py](file:///c:/YTU/CDTP/tests/test_simulation_driving.py) (Sürüş, Frenleme, Engel Aşma ve İlaç Kutusu Güvenliği)
+- **Dünya Dosyası:** [cdtp_balance_world.wbt](file:///c:/YTU/self-balancing-robot/webots/worlds/cdtp_balance_world.wbt)
+- **Çekirdek Paket (`self_balancing_robot`):**
+  - Robot & Kontrolör Parametreleri: [config.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/config.py)
+  - MPU-6050 Tamamlayıcı Filtre & Sensör Füzyonu: [sensor_fusion.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/sensor_fusion.py)
+  - Çift Döngülü Kaskad PID & Motor Telafisi: [cascade_controller.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/cascade_controller.py)
+  - Zaman Serisi Telemetri Kaydedici: [telemetry.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/telemetry.py)
+- **Webots Adaptörü:**
+  - Ana Koordinatör: [balance_controller.py](file:///c:/YTU/self-balancing-robot/webots/controllers/balance_controller/balance_controller.py)
+- **Doğrulama Testleri:** [test_simulation_balance.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_balance.py) (Statik Denge, Dış Dürtme ve İlaç Kutusu Taşıma), [test_simulation_driving.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_driving.py) (Sürüş, Frenleme, Engel Aşma ve İlaç Kutusu Güvenliği)
 
 ### 7.1. Fiziksel ve Kinematik Modelleme
 
@@ -210,21 +219,21 @@ c:\YTU\CDTP\
 1. **Dış Dürtme / Bozucu Kuvvet Dayanıklılığı (Disturbance Rejection - P Tuşu):**
    - Webots Supervisor API (`robot_node.addForceWithOffset([0.0, push_force_y, 0.0], [0.0, 0.0, 0.08], True)`) ile robota anlık 4.0 N itme kuvveti uygulanabilir.
    - P tuşuna basıldığında yönü değişen (bir ileri, bir geri) 4.0 N impuls uygulanır; kaskad kontrolcü azami 4.5 derece eğim içinde sendelemeyi söndürür ve devrilmeden 1.5 saniye içinde dik dengeye geri döner.
-   - Doğrulama Testi: [test_simulation_balance.py](file:///c:/YTU/CDTP/tests/test_simulation_balance.py)
+   - Doğrulama Testi: [test_simulation_balance.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_balance.py)
 2. **Ayrık Dinamik İlaç Kutusu (Solid Dynamic Medicine Box - Modül E):**
    - Katman 4 üzerine 80 × 26 mm dekota kaset yuvası sınırları ve çerçevesi eklendi.
    - 25 gram kütleye sahip bağımsız bir Aspirin ilaç kutusu `Solid` nesnesi olarak modellendi; temas sürtünmesi (`ContactProperties: medicine_box - default, coulombFriction 0.5`) tanımlandı.
    - Robot ileri-geri hızlanıp ani fren yapsa veya dürtülse dahi ilaç kutusu hazneden fırlamadan güvenle taşınır.
-   - Doğrulama Testi: [test_simulation_driving.py](file:///c:/YTU/CDTP/tests/test_simulation_driving.py) ve [test_simulation_balance.py](file:///c:/YTU/CDTP/tests/test_simulation_balance.py)
+   - Doğrulama Testi: [test_simulation_driving.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_driving.py) ve [test_simulation_balance.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_balance.py)
 3. **MPU-6050 Sensör Gürültüsü & Tamamlayıcı Filtre (Complementary Filter):**
    - Jiroskop (standart sapma 0.002 rad/s) ve ivmeölçer (standart sapma 0.012 m/s²) üzerine gerçekçi beyaz Gauss gürültüsü eklendi.
    - `balance_controller.py` içinde ideal simülasyon oryantasyonu yerine ESP32 firmware mimarisiyle birebir aynı %98 Gyro integrali + %2 İvmeölçer açısı tamamlayıcı filtresi (`pitch_est = 0.98 * (pitch_est + gyro_rate * dt) + 0.02 * accel_pitch`) entegre edildi.
-   - Doğrulama Testi: [test_simulation_balance.py](file:///c:/YTU/CDTP/tests/test_simulation_balance.py)
+   - Doğrulama Testi: [test_simulation_balance.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_balance.py)
 4. **JGB37 DC Motor Ölü Bölgesi (Deadband) & Sürtünme Telafisi:**
    - 0.60 rad/s altındaki torklarda motorun statik sürtünmeden dolayı dönmediği stiction ölü bölgesi modellendi.
    - Kontrolcüye stiction feedforward ofseti (`compensate_deadband`, comp = 0.50 rad/s) eklenerek motorun eşik altı komut gecikmesi sıfırlandı.
-   - Doğrulama Testi: [test_simulation_driving.py](file:///c:/YTU/CDTP/tests/test_simulation_driving.py)
+   - Doğrulama Testi: [test_simulation_driving.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_driving.py)
 5. **Ev İçi Zemin Geçişleri & 4 mm Kablo Kanalı Aşma (Floor Obstacle):**
    - Y = 0.85 m mesafesinde 4 mm yüksekliğinde ve 45 mm genişliğinde zemin kablo kanalı / halı eşiği yerleştirildi.
    - 85 mm çapındaki kauçuk tekerlekler eşiğe çarptığında robot sendelemeden ve ilaç kutusunu düşürmeden engeli tırmanıp aşar.
-   - Doğrulama Testi: [test_simulation_driving.py](file:///c:/YTU/CDTP/tests/test_simulation_driving.py)
+   - Doğrulama Testi: [test_simulation_driving.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_driving.py)

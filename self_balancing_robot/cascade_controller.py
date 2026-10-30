@@ -1,12 +1,15 @@
 """
-YTU EEF CDTP - Çift Döngülü Kaskad Denge ve Sürüş Kontrolcüsü
+Çift Döngülü Kaskad Denge ve Sürüş Kontrolcüsü
 İç Döngü: Eğim açısı PID kontrolü
 Dış Döngü: Hız / Konum takip ve Clamping Anti-Windup entegrasyonu
 İleri Besleme: Taban tekerlek açısal hızı (Base Omega Feedforward)
 """
 
 import math
-from config import RobotConfig
+try:
+    from self_balancing_robot.config import RobotConfig
+except ImportError:
+    from config import RobotConfig
 
 def clamp(val: float, min_val: float, max_val: float) -> float:
     return max(min_val, min(val, max_val))
