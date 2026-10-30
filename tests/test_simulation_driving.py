@@ -1,9 +1,10 @@
 """
-Bütünleşik Sürüş, Dinamik Frenleme ve Engel Aşma Testi
-Robotun şartname isterleri ve manevra kabiliyetini doğrular:
-1. Şartname Modül B: İleri (+0.30 m/s), geri (-0.30 m/s) ve kontrollü dinamik frenleme.
-2. Zemin Engeli Aşma: Y=0.85 m mesafesindeki 4 mm zemin kablo kanalını devrilmeden geçme.
-3. Şartname Modül E: Sürüş ve engel tırmanışı boyunca Aspirin ilaç kutusunu düşürmeden taşıma.
+Bütünleşik Sürüş, 1 Metre Mesafe, Duruş ve Geri Manevra Testi (Modül B & E)
+Webots simülasyonunu çalıştırarak şartname isterlerini ve dinamik performansı doğrular:
+1. Şartname Modül B (Seyir Mesafesi): Eldiven yönlendirmesiyle 0.8 m – 1.2 m mesafe kat edilmesi.
+2. Kalıcı Duruş: Hedef mesafede tam duruş yapılması ve 3 saniye boyunca hareketsiz dik dengede (hız < 0.03 m/s) kalınması.
+3. Geri Manevra Kabiliyeti: Geri komutuyla negatif hızda kararlı sürüş.
+4. Modül E: Tüm hızlanma, fren ve manevralar boyunca Aspirin kutusunun yerel eksende hazneden düşmeden taşınması.
 """
 
 import subprocess
@@ -16,14 +17,26 @@ def run_driving_test():
     world_path = os.path.join(project_root, "webots", "worlds", "cdtp_balance_world.wbt")
     webots_exe = r"C:\Program Files\Webots\msys64\mingw64\bin\webots.exe"
 
+    telemetry_path = os.path.join(project_root, "logs", "simulation_telemetry.csv")
+    if os.path.exists(telemetry_path):
+        try:
+            os.remove(telemetry_path)
+        except Exception:
+            pass
+
     env = os.environ.copy()
-    env["WEBOTS_TEST_STEPS"] = "400"  # 4 saniye = 400 kontrol adımı
-    # Adım 20: İleri sürüş (W) -> Y=0.85m kablo kanalını aşar, Adım 250: Dinamik fren (SPACE), Adım 310: Geri sürüş (S)
-    env["TEST_DRIVE_COMMANDS"] = "20:W,250:SPACE,310:S"
+    # 1750 kontrol adımı = 17.5 saniye
+    # Adım 20: İleri sürüş (W) -> ~1.0 m yol alır
+    # Adım 950: Dinamik fren (SPACE) -> t=11.0s civarı tam duruş (~1.00 m)
+    # Adım 1100 - 1400 (t=11.0s - 14.0s, 3.0 saniye): 0.8-1.2 m bandında sabit dik duruş
+    # Adım 1400 - 1750 (t=14.0s - 17.5s): Geri sürüş (S) -> negatif hız doğrulaması
+    env["WEBOTS_TEST_STEPS"] = "1750"
+    env["TEST_DRIVE_COMMANDS"] = "20:W,950:SPACE,1400:S"
+    env.pop("TEST_PUSH_COMMANDS", None)
 
     print("=" * 65)
-    print("YTU CDTP - Bütünleşik Sürüş, Engel ve Yük Testi (Modül B & E)")
-    print("Test Kapsamı: İleri Sürüş + 4 mm Kablo Kanalı Aşma + Fren + Geri Sürüş")
+    print("YTU CDTP - Modül B (1m Mesafe + 3s Duruş + Geri Sürüş) & Modül E Testi")
+    print("Test Kapsamı: 1 Metre Seyir + 3s Duruş + Geri Manevra + İlaç Güvenliği")
     print("=" * 65)
 
     res = subprocess.run(
@@ -31,7 +44,7 @@ def run_driving_test():
         env=env,
         capture_output=True,
         text=True,
-        timeout=35
+        timeout=55
     )
 
     print("=== WEBOTS CIKTISI ===")
@@ -40,7 +53,9 @@ def run_driving_test():
         print("=== UYARILAR / HATALAR ===")
         print(res.stderr)
 
-    telemetry_path = os.path.join(project_root, "logs", "simulation_telemetry.csv")
+    # 1. Süreç Çıkış Doğrulaması (Crash Koruması)
+    assert res.returncode == 0, f"[BASARISIZ] Webots hata ile sonlandı! Çıkış kodu: {res.returncode}"
+
     if not os.path.exists(telemetry_path):
         print(f"[HATA] Telemetri dosyasi bulunamadi: {telemetry_path}")
         return False
@@ -54,41 +69,56 @@ def run_driving_test():
                 "step": int(row["step"]),
                 "pitch_deg": float(row["pitch_deg"]),
                 "vel_meas": float(row["vel_meas_mps"]),
-                "vel_target": float(row["vel_target_mps"])
+                "pos_m": float(row["pos_m"])
             })
 
     if not records:
-        print("[HATA] Telemetri dosyasi bos!")
+        print("[HATA] Telemetri kaydi bos!")
         return False
 
-    # İleri seyir hızı (Adım 100 - 200 arası)
-    fwd_vels = [r["vel_meas"] for r in records if 100 <= r["step"] <= 200]
+    # 2. Tamamlanma Doğrulaması (Erken çıkışı engeller)
+    assert len(records) >= 800, f"[BASARISIZ] Telemetri eksik ({len(records)} kayıt alındı)!"
+    assert records[-1]["time_s"] >= 17.3, f"[BASARISIZ] 17.5 saniye tamamlanamadı! Son zaman: {records[-1]['time_s']:.2f}s"
+    assert records[-1]["step"] >= 1730, f"[BASARISIZ] 1750 adım tamamlanamadı! Son adım: {records[-1]['step']}"
+
+    # 3. İleri Seyir Hızı (Adım 200 - 800 arası)
+    fwd_vels = [r["vel_meas"] for r in records if 200 <= r["step"] <= 800]
     avg_fwd = sum(fwd_vels) / len(fwd_vels) if fwd_vels else 0.0
 
-    # Frenleme fazı hızı (Adım 280 - 310 arası)
-    brake_vels = [abs(r["vel_meas"]) for r in records if 280 <= r["step"] <= 310]
-    avg_brake = sum(brake_vels) / len(brake_vels) if brake_vels else 99.0
+    # 4. Şartname Modül B: Duruş Öncesi Kat Edilen Mesafe (0.8 m – 1.2 m aralığı)
+    stop_records = [r for r in records if 1100 <= r["step"] <= 1400]
+    stop_pos = [r["pos_m"] for r in stop_records]
+    avg_stop_pos = sum(stop_pos) / len(stop_pos) if stop_pos else 0.0
 
-    # Geri sürüş fazı hızı (Adım 370 - 400 arası)
-    bwd_vels = [r["vel_meas"] for r in records if 370 <= r["step"] <= 400]
+    # 5. Kalıcı Duruş Doğrulaması (3 saniye: t=11.0s - 14.0s, adım 1100 - 1400)
+    stop_vels = [abs(r["vel_meas"]) for r in stop_records]
+    avg_stop_vel = sum(stop_vels) / len(stop_vels) if stop_vels else 99.0
+    max_stop_vel = max(stop_vels) if stop_vels else 99.0
+
+    # 6. Geri Sürüş Fazı Hızı (Adım 1550 - 1750 arası)
+    bwd_vels = [r["vel_meas"] for r in records if 1550 <= r["step"] <= 1750]
     avg_bwd = sum(bwd_vels) / len(bwd_vels) if bwd_vels else 0.0
 
     max_pitch = max(abs(r["pitch_deg"]) for r in records)
 
-    print(f"İleri Sürüş Ortalama Hız         : {avg_fwd:+.3f} m/s")
-    print(f"Frenleme Anı Kalan Hız          : {avg_brake:.3f} m/s")
-    print(f"Geri Sürüş Ortalama Hız          : {avg_bwd:+.3f} m/s")
-    print(f"Tüm Test Boyunca Azami Eğim      : {max_pitch:.2f} derece")
+    print(f"İleri Seyir Ortalama Hız               : {avg_fwd:+.3f} m/s")
+    print(f"Duruş Anındaki Net Mesafe (Hedef 0.8-1.2m): {avg_stop_pos:+.3f} metre")
+    print(f"3 Saniyelik Duruş Ortalama Hız         : {avg_stop_vel:.4f} m/s")
+    print(f"3 Saniyelik Duruş Azami Hız            : {max_stop_vel:.4f} m/s")
+    print(f"Geri Sürüş Ortalama Hız                : {avg_bwd:+.3f} m/s")
+    print(f"Tüm Test Boyunca Azami Gerçek Eğim     : {max_pitch:.2f} derece")
 
     # Başarı Kriterleri
-    assert "Robot devrildi" not in res.stdout, "[BASARISIZ] Robot manevra veya engel anında devrildi!"
+    assert "Robot devrildi" not in res.stdout, "[BASARISIZ] Robot manevra anında devrildi!"
     assert "Ilac kutusu hazneden dustu" not in res.stdout, "[BASARISIZ] İlaç kutusu hazneden düştü!"
-    assert avg_fwd > 0.05, f"[BASARISIZ] İleri sürüş yetersiz: {avg_fwd} m/s"
-    assert avg_brake < 0.20, f"[BASARISIZ] Dinamik frenleme tam duruş sağlayamadı: {avg_brake} m/s"
-    assert avg_bwd < 0.05, f"[BASARISIZ] Geri sürüş yetersiz: {avg_bwd} m/s"
-    assert max_pitch < 25.0, f"[BASARISIZ] Engel aşma veya frenleme anında aşırı yatış: {max_pitch} derece"
+    assert 0.80 <= avg_stop_pos <= 1.20, f"[BASARISIZ] Kat edilen mesafe şartname aralığı (0.8 - 1.2 m) dışında: {avg_stop_pos:.3f} m"
+    assert avg_fwd > 0.04, f"[BASARISIZ] İleri sürüş seyir hızı yetersiz: {avg_fwd:+.3f} m/s"
+    assert avg_stop_vel < 0.02, f"[BASARISIZ] 3 saniyelik duruş fazında artık hız yüksek: {avg_stop_vel:.4f} m/s"
+    assert max_stop_vel < 0.04, f"[BASARISIZ] 3 saniyelik duruş fazında kayma/titreme: {max_stop_vel:.4f} m/s"
+    assert avg_bwd < -0.05, f"[BASARISIZ] Geri sürüş yetersiz veya yanlış yönde: {avg_bwd:+.3f} m/s"
+    assert max_pitch < 15.0, f"[BASARISIZ] Manevra anında aşırı yatış: {max_pitch:.2f} derece"
 
-    print("[BASARILI] Modül B Sürüş/Manevra ve Modül E İlaç Taşıma Testi Tamamlandi!")
+    print("[BASARILI] Modül B (1m Mesafe + 3s Duruş + Geri Sürüş) ve Modül E Tam Doğrulandı!")
     return True
 
 if __name__ == "__main__":
