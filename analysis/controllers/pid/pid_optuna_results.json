@@ -1,0 +1,74 @@
+{
+  "method": "Direct Webots multi-seed Optuna TPE search and independent paired validation",
+  "search_trials": 10000,
+  "winner": "candidate_4",
+  "accepted": true,
+  "baseline_params": {
+    "KP_VOLT": 56.47,
+    "KD_VOLT": 1.05,
+    "KV_VEL": 0.19,
+    "KP_POS": 0.097,
+    "KI_POS": 0.0145,
+    "KP_VEL_DRIVE": 0.21
+  },
+  "candidate_params": {
+    "KP_VOLT": 60.794403229969916,
+    "KD_VOLT": 1.2985006615797772,
+    "KV_VEL": 0.29515172652399174,
+    "KP_POS": 0.09997499141105295,
+    "KI_POS": 0.010442440843716526,
+    "KP_VEL_DRIVE": 0.24864184011587362
+  },
+  "selection_costs": {
+    "candidate_1": 2.3161169684852334,
+    "candidate_2": 2.395781639423457,
+    "candidate_3": 2.3056474373355904,
+    "candidate_4": 2.182421743214358,
+    "candidate_5": 2.190963558799531,
+    "current": 2.8045909876666686
+  },
+  "final_costs": {
+    "candidate_4": 2.2217668819083722,
+    "current": 2.8155636810775677
+  },
+  "relative_cost_reduction": 0.2108980177432671,
+  "improvement_ci95": [
+    0.20308636027054122,
+    0.6375970631511129
+  ],
+  "selection_seeds": [
+    501,
+    502,
+    503,
+    504,
+    505
+  ],
+  "final_seeds": [
+    901,
+    902,
+    903,
+    904,
+    905,
+    906,
+    907,
+    908,
+    909,
+    910
+  ],
+  "paired_improvement": [
+    0.7170325990401927,
+    0.26677888398494254,
+    -0.04964144500261769,
+    0.485565104574599,
+    0.019098481703372805,
+    0.5273899694255957,
+    0.08182009751656238,
+    0.8335414115732878,
+    1.0454673745848715,
+    0.20617153310893999
+  ],
+  "report_sha256": "6f8d92f6aa3ec2e880bbd24e1939023ad1c915f7f507dea2f264d426fbe34cec",
+  "raw_experiment": "logs\\voltage_optuna\\multifidelity_20261030_203530",
+  "defaults_modified": false,
+  "scope": "Static balance, straight forward/reverse driving and braking, +/-1.5 N pushes; fixed motor parameters and battery voltage; no hardware or turning validation"
+}
