@@ -112,7 +112,7 @@
 - **İç Döngü (Denge & Açı Kontrolü - 100 Hz / 10 ms):**
   - MPU-6050 tamamlayıcı filtre (Complementary Filter: %98 Gyro + %2 Accel) veya DMP çıktısı okunur.
   - `u_denge = Kp_theta * theta + Kd_theta * theta_dot`
-- **Dış Döngü (Hız & Konum Kontrolü - 20 Hz / 50 ms):**
+- **Dış Döngü (Hız & Konum Kontrolü - 100 Hz / 10 ms):**
   - Enkoder pulse verileri okunur; robotun sürüklenmesini önlemek ve eldivenden gelen hız komutunu takip etmek için açı referansına (`theta_ref`) küçük ofset basılır:
   - `theta_ref = Kp_v * (v_hedef - v) + Ki_v * e_v_int`
 
@@ -128,109 +128,90 @@
 ## 6. Dizin Ağacı ve Dosya Yerleşimi
 
 ```text
-c:\YTU\self-balancing-robot\
-├── .vscode/               # VSCode ayarları ve dosya format kuralları
-├── docs/                  # Proje dokümantasyonu ve şartnameler
-│   ├── specs/             # Resmi şartname, takvim ve tanıtım PDF'leri
-│   ├── reports/           # FR-1558 yönetim planı ve proje raporları
-│   ├── cad/               # Lazer kesim DXF ve teknik SVG şablonları (135x95 mm)
-│   └── assets/            # Flowchart, sistem mimarisi ve görsel renderlar
-├── self_balancing_robot/  # Bağımsız çekirdek robot yazılım paketi
-│   ├── __init__.py        # Paket dışa aktarımları
-│   ├── config.py          # Robot parametreleri, PID kazançları ve eşikler
-│   ├── sensor_fusion.py   # Tamamlayıcı filtre ve sensör gürültüsü
-│   ├── cascade_controller.py # Kaskad PID, anti-windup ve sürtünme telafisi
-│   └── telemetry.py       # Telemetri veri kaydedicisi
-├── esp32/                 # Gömülü yazılımlar (ESP32)
-│   ├── robot/             # İki tekerlekli robot FreeRTOS/PID kontrol firmware'i
-│   └── glove/             # Giyilebilir kontrol eldiveni ESP-NOW firmware'i
-├── app/                   # Şartname 5.2 Mobil / Kamera Değerlendirme Uygulaması
-├── webots/                # Webots R2025a simülasyon dünyası ve kontrolcüleri
-│   ├── controllers/       # İnce kontrolcü adaptörleri (self_balancing_robot paketini yükler)
-│   └── worlds/            # Webots dünya dosyaları (12x12 m oda, arena, engeller)
-├── analysis/              # Telemetri, kontrol analizi ve grafikler
-├── tests/                 # Sensör, motor, enkoder ve bağlantı doğrulama testleri
-├── logs/                  # Telemetri ve test günlükleri
-├── .editorconfig          # Kod biçimlendirme kuralları
-├── .gitattributes         # Git satır sonu ve dosya türü kuralları
-├── .gitignore             # Git versiyon kontrolü kuralları
-├── CHANGELOG.md           # Sürüm ve değişiklik geçmişi
-├── AGENTS.md              # Teknik hafıza ve mimari kararlar arşivi
-└── README.md              # Proje genel tanıtımı ve hızlı başlangıç kılavuzu
+self_balancing_robot/
+├── .github/workflows/ci.yml              # Python 3.10-3.12 test ve ruff matrisi
+├── analysis/                             # Kontrol, telemetri ve Webots optimizasyon araçları
+│   ├── README.md                         # Analiz ve doğrulama araçları kılavuzu
+│   ├── comparison/                       # Sistem dinamiği ve Webots doğrulama grafik motoru
+│   │   └── plot_tuned_system.py          # 300 DPI akademik Webots doğrulama grafikleri üreticisi
+│   ├── controllers/pid/                  # Gerilim tabanlı kaskad PID optimizasyon araçları
+│   │   ├── optimize_pid_controller.py    # Doğrudan Webots Optuna TPE 6-kazanç araması
+│   │   ├── simulation_runner.py          # İzole Webots fizik koşucusu ve puanlayıcısı
+│   │   ├── pid_candidate_params.json     # Tam hassasiyetli referans aday kazançları
+│   │   └── pid_optuna_results.json       # Çok tohumlu doğrulama ve karşılaştırma özeti
+│   └── figures/python/                   # 300 DPI Webots doğrulama figürleri (python_fig1 - python_fig4)
+├── app/                                  # Şartname 5.2 Mobil / Kamera Değerlendirme Uygulaması
+├── docs/                                 # Proje dokümantasyonu ve şartnameler
+│   ├── specs/                            # Resmi şartname, takvim ve tanıtım PDF'leri
+│   ├── reports/                          # FR-1558 yönetim planı ve proje raporları
+│   ├── cad/                              # Lazer kesim DXF ve teknik SVG şablonları (135x95 mm)
+│   ├── assets/                           # Flowchart, sistem mimarisi ve görsel renderlar
+│   ├── voltage_model.md                  # DC motor ve TB6612 gerilim/tork modeli varsayımları
+│   └── pid_optimization.md               # Doğrudan Webots Optuna PID optimizasyon kılavuzu
+├── esp32/                                # Gömülü yazılımlar (ESP32)
+│   ├── robot/                            # İki tekerlekli robot FreeRTOS/PID kontrol firmware'i
+│   └── glove/                            # Giyilebilir kontrol eldiveni ESP-NOW firmware'i
+├── logs/                                 # Telemetri CSV ve test günlükleri
+├── self_balancing_robot/                 # Bağımsız çekirdek robot yazılım paketi
+│   ├── __init__.py                       # Paket dışa aktarımları
+│   ├── config.py                         # SSOT merkezi konfigürasyon (CONFIG / RobotConfig)
+│   ├── dc_motor_model.py                 # JGB37 armatür direnci, ters EMK, redüktör ve sürtünme modeli
+│   ├── ir_homing.py                      # 38 kHz IR verici ve 2x TSOP38438 diferansiyel yanaşma kontrolcüsü
+│   ├── pid_controller.py                 # Gerilim tabanlı kaskad denge kontrolü ve PI dönüş kontrolcüsü
+│   ├── sensor_fusion.py                  # Saf deterministik tamamlayıcı filtre (%98 Gyro + %2 Accel)
+│   └── telemetry.py                      # Zaman serisi CSV telemetri kaydedicisi
+├── tests/                                # Pytest / unittest birim ve Webots doğrulama testleri
+├── webots/                               # Webots R2025a dijital ikiz ortamı
+│   ├── worlds/webots_self_balancing_robot.wbt  # Dijital ikiz simülasyon dünyası
+│   └── controllers/webots_main/          # Üretim kodunu çalıştıran Webots kontrolcü adaptörü
+├── pyproject.toml                        # Paket ve pytest yapılandırması
+├── requirements.txt                      # Python çalışma, analiz ve test bağımlılıkları
+├── pyrightconfig.json                    # Pyright tip ve modül yolu yapılandırması
+├── ruff.toml                             # Ruff lint yapılandırması
+├── CITATION.cff                          # Akademik atıf üstverisi
+├── CHANGELOG.md                          # Sürüm ve değişiklik geçmişi
+├── AGENTS.md                             # Teknik hafıza ve mimari kararlar arşivi
+├── README.md                             # Proje genel tanıtımı ve hızlı başlangıç kılavuzu
+└── LICENSE                               # MIT
 ```
 
 ---
 
-## 7. Webots Simülasyon Dünyası ve Kontrolcü Mimarisi
+## 7. Webots Simülasyonu ve Gerilim Kontrolü
 
-- **Dünya Dosyası:** [cdtp_balance_world.wbt](file:///c:/YTU/self-balancing-robot/webots/worlds/cdtp_balance_world.wbt)
+- **Simülasyon Dünyası:** [webots_self_balancing_robot.wbt](file:///c:/YTU/self-balancing-robot/webots/worlds/webots_self_balancing_robot.wbt)
+- **Webots Adaptörü:** [webots_main.py](file:///c:/YTU/self-balancing-robot/webots/controllers/webots_main/webots_main.py)
 - **Çekirdek Paket (`self_balancing_robot`):**
-  - Robot & Kontrolör Parametreleri: [config.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/config.py)
-  - MPU-6050 Tamamlayıcı Filtre & Sensör Füzyonu: [sensor_fusion.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/sensor_fusion.py)
-  - Çift Döngülü Kaskad PID & Motor Telafisi: [cascade_controller.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/cascade_controller.py)
-  - Zaman Serisi Telemetri Kaydedici: [telemetry.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/telemetry.py)
-- **Webots Adaptörü:**
-  - Ana Koordinatör: [balance_controller.py](file:///c:/YTU/self-balancing-robot/webots/controllers/balance_controller/balance_controller.py)
-- **Doğrulama Testleri:** [test_simulation_balance.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_balance.py) (Statik Denge, Dış Dürtme ve İlaç Kutusu Taşıma), [test_simulation_driving.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_driving.py) (Sürüş, Frenleme, Engel Aşma ve İlaç Kutusu Güvenliği)
+  - Robot & Kontrolör Konfigürasyonu (SSOT): [config.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/config.py) (`CONFIG`, `RobotConfig`)
+  - JGB37 & TB6612 Fiziksel Motor Modeli: [dc_motor_model.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/dc_motor_model.py) (`DCMotorModel`)
+  - Gerilim Tabanlı Kaskad PID & PI Dönüş Kontrolcüsü: [pid_controller.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/pid_controller.py) (`PIDController`)
+  - Deterministik Tamamlayıcı Filtre: [sensor_fusion.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/sensor_fusion.py) (`SensorFusion`)
+  - Zaman Serisi Telemetri Kaydedici: [telemetry.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/telemetry.py) (`TelemetryLogger`)
 
 ### 7.1. Fiziksel ve Kinematik Modelleme
 
 - **Koordinat Sistemi:** Webots ENU (+X Doğu/Sağ, +Y Kuzey/İleri, +Z Yukarı).
 - **Şasi Ebatları:** 135 mm × 95 mm × 5 mm 4 katmanlı Dekota plaka.
-- **Tekerlekler:** 85 mm çap (yarıçap R = 0.0425 m), 170 mm iz genişliği, kauçuk zemin sürtünmesi (coulombFriction 1.8).
+- **Tekerlekler:** 85 mm çap (yarıçap R = 0.0425 m), 170 mm iz genişliği, kauçuk zemin sürtünmesi (`coulombFriction 1.8`).
 - **Taşıyıcı Kolonlar:** 4 adet M3 paslanmaz çelik tij (Ø3.2 mm, 122 mm boy).
 - **Kütle ve Ağırlık Merkezi:** Toplam kütle 0.86 kg, CoM mil ekseninden 55 mm yukarıda (yerden yaklaşık 97.5 mm).
 - **Bileşenler:** Taban katmanında TB6612FNG ve JGB37 motorlar, Katman 2'de 3S 18650 Li-ion batarya, Katman 3'te ESP32 ve MPU-6050, Katman 4'te Aspirin ilaç kutusu kaseti, switch, sigorta ve durum LED'i.
 
-### 7.2. Kaskad Kontrol Kazançları ve Dinamik Davranış
+### 7.2. Kontrol ve Optimizasyon
 
-- **Geometrik Oryantasyon Düzeltmesi (Webots Cylinder Ekseni):**
-  - Webots Cylinder varsayılan olarak yerel Z eksenindedir.
-  - Tekerlekler ve motor gövdeleri Y ekseni etrafında 90 derece döndürülerek (`0 1 0 1.57079632679`) tekerlek mili X eksenine hizalandı ve kauçuk tekerlekler yere dik olarak basar hale getirildi.
-  - Taşıyıcı M3 tij kolonları Z ekseninde bırakılarak (`0 0 1 0`) 4 katmanı dikey olarak birbirine bağladı.
-- **İç Döngü (Eğim Açısı PID - 100 Hz / dt = 10 ms):**
-  - Eğim Açısı: IMU rpy[0] (Roll around X)
-  - Eğim Hızı Filtresi: 50 Hz ayrık titremeyi (discrete chatter) engellemek için EMA filtresi (`filtered_rate = 0.70 * filtered_rate + 0.30 * gyro_vals[0]`) uygulandı.
-  - `KP_PITCH = 140.0` (Optuna ile optimize edildi)
-  - `KD_PITCH = 3.60`
-- **Dış Döngü (Anti-Windup Clamped Konum & Hız PI-D - 100 Hz / dt = 10 ms):**
-  - **Döngü Frekansı:** Dış döngü de iç döngü ile eşzamanlı olarak her 10 ms'de (100 Hz) hesaplanır.
-  - **Clamping Anti-Windup (Koşullu Entegrasyon):**
-    - Motor çıkışı azami hız sınırına (`MAX_VELOCITY = 30.0 rad/s`) ulaştığında veya hedef eğim açısı sınıra dayandığında integral hesabı dondurulur (freeze).
-    - Konum integrali `MAX_POS_INT = 0.030 rad` (~1.7 derece) sınırıyla sıkı biçimde clamp edilir.
-    - Sürüş komutlarında (W/S) integral sıfırlanır ve hız hatası üzerinden hedef eğim açısı (`pitch_target = - clamp(KP_VEL * vel_err, -MAX_PITCH_TARGET, MAX_PITCH_TARGET)`) üretilir.
-  - `KP_VEL = 0.045` (Hız hatası hedef eğim kazancı)
-  - `KP_POS = 0.20` (Konum hatası kazancı, rad/m)
-  - `KI_POS = 0.015` (Konum integrali kazancı, rad/m-s)
-  - `MAX_PITCH_TARGET = 0.025 rad` (~1.43 derece azami hedef eğim açısı)
-- **Taban Hız İleri Beslemesi (Base Omega Feedforward & Dinamik Frenleme):**
-  - **Sürüşten Duruşa Geçişte Öne Devrilme Kök Nedeni:** Robot W tuşuyla ileri giderken tekerleklerin doğrusal hızı (`v > 0`, `omega < 0`) oluşur. W bırakıldığında gövdeyi arkaya yatırmak için motor komutu doğrudan yavaşlatılırsa, tekerlekler yere göre motor-freni yaparak gövdeyi eylemsizlikle daha da öne fırlatır ve robot öne devrilir.
-  - **Çözüm (Base Omega Feedforward):** Motor kontrol komutuna robotun anlık çizgisel hızına karşılık gelen dönme hızı (`base_omega = - v / R`) ileri besleme olarak eklendi (`u = base_omega + u_balance`).
-  - Sürüş komutu bittiğinde robot ani bir pozisyon çıpası atmak yerine, hız hatasından (`target_velocity - v`) hafif bir frenleme eğimi üretir. Hız 0.05 m/s altına indiğinde robot durduğu yere yumuşakça çıpa atar.
-  - W / Yukarı Ok: İleri sürüş (güvenli nominal hız)
-  - S / Aşağı Ok: Geri sürüş (güvenli nominal hız)
-  - A / Sol Ok: Sola diferansiyel dönüş
-  - D / Sağ Ok: Sağa diferansiyel dönüş
-  - Boşluk (Space): Frenleme ve anında durduğu yere konum kilidi atma
-  - R Tuşu: Robotu başlangıç koordinatlarına ve sıfır açıya sıfırlama (Devrilmiş olsa bile klavye emniyet bloğundan önce okunduğu için fizik sıfırlanabilir).
+- **İç ve Dış Döngü (100 Hz / 10 ms):** İç açı döngüsü 100 Hz PD ile gerilim üretir (`KP_VOLT = 60.7944`, `KD_VOLT = 1.2985`). Sürüşte hız hatası hedef eğime dönüştürülür (`KP_VEL_DRIVE = 0.2486`); duruşta konum PI (`KP_POS = 0.1000`, `KI_POS = 0.0104`) ve hız sönümleme (`KV_VEL = 0.2952`) kullanılır.
+- **Motor Modeli ve İleri Besleme:** Gerilim komutu; sürtünme telafisi ve tekerlek başına yüzde 85 ters EMK ileri beslemesinden sonra 8 bit PWM üzerinden [dc_motor_model.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/dc_motor_model.py) modeline uygulanır. Motor modeli armatür direnci, ters EMK, redüktör ve sürtünmeden fiziksel tork hesaplar; kaymayı Webots zemin teması çözer.
+- **Denge Öncelikli PI Dönüş Kontrolü:** Sağ/sol dönüş, iki enkoderin yarı hız farkından PI geri beslemesiyle (`KP_TURN = 0.20`, `KI_TURN = 1.0`) kontrol edilir. Gerilim doyumunda dengeye mutlak öncelik verilir. `TURN_SPEED = 1.2 rad/s` mevcut geometride yaklaşık 34 derece/saniye gövde dönüş hedefidir.
+- **Doğrudan Webots Optimizasyonu:** Yeniden ayar yalnız doğrudan Webots ölçümleriyle yapılır: [optimize_pid_controller.py](file:///c:/YTU/self-balancing-robot/analysis/controllers/pid/optimize_pid_controller.py) Optuna adaylarını, [simulation_runner.py](file:///c:/YTU/self-balancing-robot/analysis/controllers/pid/simulation_runner.py) fizik koşularını ve puanlamayı yönetir. Mevcut kazançlar korunur; arama kaynak değerlerini otomatik değiştirmez.
+- **Donanım Kalibrasyon Sınırları:** Donanım hazır olduğunda motor/enkoder, batarya yük gerilimi, sürücü kayıpları, IMU ofseti ve kütle/ağırlık merkezi ölçülerek model ve donanım ayarı güncellenececek. Öncesinde model sabitlerini ölçülmüş veri saymayın.
+- **Kayıtlar ve Belgeler:** Tam katsayılar ve son test özeti `analysis/controllers/pid/` altında ([pid_candidate_params.json](file:///c:/YTU/self-balancing-robot/analysis/controllers/pid/pid_candidate_params.json), [pid_optuna_results.json](file:///c:/YTU/self-balancing-robot/analysis/controllers/pid/pid_optuna_results.json)) korunur. Model varsayımları [voltage_model.md](file:///c:/YTU/self-balancing-robot/docs/voltage_model.md) ve optimizasyon yöntemi [pid_optimization.md](file:///c:/YTU/self-balancing-robot/docs/pid_optimization.md) belgelerindedir.
+- **Teleoperasyon Tuşları:** W/S ileri/geri, A/D dönüş, Space frenleme, P dış dürtme, R fizik ve kontrolcü sıfırlamasıdır. İtme sonrası eski konuma dönmek zorunlu değildir.
 
-### 7.3. Gerçekçi Simülasyon Geliştirmeleri ve Fiziksel Dayanıklılık
+### 7.3. Doğrulama Testleri
 
-1. **Dış Dürtme / Bozucu Kuvvet Dayanıklılığı (Disturbance Rejection - P Tuşu):**
-   - Webots Supervisor API (`robot_node.addForceWithOffset([0.0, push_force_y, 0.0], [0.0, 0.0, 0.08], True)`) ile robota anlık 4.0 N itme kuvveti uygulanabilir.
-   - P tuşuna basıldığında yönü değişen (bir ileri, bir geri) 4.0 N impuls uygulanır; kaskad kontrolcü gerçekte yaklaşık 6.9 derece tepe eğim altında sendelemeyi söndürür ve devrilmeden dik dengeye geri döner.
-   - Doğrulama Testi: [test_simulation_balance.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_balance.py)
-2. **Ayrık Dinamik İlaç Kutusu ve Yerel Eksen (Body Frame) Doğrulama (Modül E):**
-   - Katman 4 üzerine 80 × 26 mm dekota kaset yuvası sınırları ve çerçevesi eklendi.
-   - 25 gram kütleye sahip bağımsız bir Aspirin ilaç kutusu `Solid` nesnesi olarak modellendi; temas sürtünmesi (`ContactProperties: medicine_box - default, coulombFriction 0.5`) tanımlandı.
-   - [balance_controller.py](file:///c:/YTU/self-balancing-robot/webots/controllers/balance_controller/balance_controller.py) içinde her adımda robot rotasyon matrisi (`R_inv = R^T`) kullanılarak kutunun bağıl konumu robotun yerel gövde eksenine (`dx_loc, dy_loc, dz_loc`) dönüştürülür. Robot eğilse dahi yanıltıcı hata üretilmez; kutu kaset sınırlarını aşarsa (`abs(dx_loc) > 0.040 m`, `abs(dy_loc) > 0.020 m`, `dz_loc < 0.100 m`) sistem `[HATA] Ilac kutusu hazneden dustu!` basar.
-   - Doğrulama Testleri: [test_simulation_driving.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_driving.py), [test_simulation_balance.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_balance.py) 
-3. **Telemetri ve Gerçek Açı (Ground Truth vs. Kestirim):**
-   - Telemetri dosyasında (`simulation_telemetry.csv`) birincil `pitch_deg` sütununda Webots fizik motorunun gerçek gövde eğim açısı (Ground Truth Roll around X) kaydedilir.
-   - Tamamlayıcı filtrenin (%98 Gyro + %2 Accel) ürettiği kestirim değeri `pitch_est_deg` sütununda ayrı olarak saklanır; böylece sensör gecikmesi ve dinamik ivmelenme hataları analiz edilebilir.
-4. **JGB37 DC Motor Ölü Bölgesi (Deadband) & Sürtünme Telafisi:**
-   - 0.60 rad/s altındaki torklarda motorun statik sürtünmeden dolayı dönmediği stiction ölü bölgesi modellendi.
-   - Kontrolcüye stiction feedforward ofseti (`compensate_deadband`, comp = 0.50 rad/s) eklenerek motorun eşik altı komut gecikmesi sıfırlandı.
-   - Doğrulama Testi: [test_simulation_driving.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_driving.py)
-5. **Zemin Modeli:**
-   - Standart düz zemin üzerinde pürüzsüz temas yüzeyi tanımlanmıştır. Zemin kablo kanalı engeli sadeleştirilerek kaldırılmıştır.
+- **Statik Denge ve Bozucu Testi ([test_simulation_pid.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_pid.py)):** 30 saniye denge, 1.5 N / 80 ms itme, ilaç kutusu güvenliği ve hızın sönmesi.
+- **Sürüş ve Duruş Testi ([test_simulation_pid_driving.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_pid_driving.py)):** 0.8–1.2 m fiziksel mesafe, geçiş sonrası üç saniye duruş, geri sürüş ve ilaç kutusu güvenliği.
+- **Dönüş Testi ([test_simulation_pid_turning.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_pid_turning.py)):** İki gürültü tohumunda (42, 142) yerinde iki yönlü dönüş, duruş, kutu güvenliği ve tekerlek kayması.
+- **IR Alıcı-Verici İstasyona Yanaşma Testi ([test_simulation_ir_homing.py](file:///c:/YTU/self-balancing-robot/tests/test_simulation_ir_homing.py)):** 30 cm yaklaşma konisi içinden 2x TSOP38438 alıcı ve 38 kHz IR verici fener nirengisiyle hizalanıp istasyon önünde otonom duruş.
+- **Birim Testleri:** [test_config_consistency.py](file:///c:/YTU/self-balancing-robot/tests/test_config_consistency.py), [test_dc_motor_model.py](file:///c:/YTU/self-balancing-robot/tests/test_dc_motor_model.py), [test_sensor_fusion.py](file:///c:/YTU/self-balancing-robot/tests/test_sensor_fusion.py), [test_pid_controller.py](file:///c:/YTU/self-balancing-robot/tests/test_pid_controller.py), [test_ir_homing.py](file:///c:/YTU/self-balancing-robot/tests/test_ir_homing.py) ve [test_pid_optimizer.py](file:///c:/YTU/self-balancing-robot/tests/test_pid_optimizer.py).
+- **Telemetri ve Kutu Denetimi:** Eğim telemetrisinde `pitch_deg` gerçek fizik açısı, `pitch_est_deg` tamamlayıcı filtre kestirimidir. Gerilim komut sütunları volt birimindedir (`cmd_left_volts`, `cmd_right_volts`). Kutu güvenliği robotun yerel ekseninde denetlenir. Eşzamanlı sürüş/dönüş ve gerçek donanım bu testlerle doğrulanmış sayılmaz.

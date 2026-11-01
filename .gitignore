@@ -45,3 +45,6 @@ webots/worlds/.*.wbproj
 
 # Isolated optimization projects and raw experiment data
 logs/voltage_optuna/
+logs/pid_tuning/
+
+recordings/

@@ -1,0 +1,18 @@
+cff-version: 1.2.1
+message: "If you use this software in your research, please cite it as below."
+title: "Self-Balancing Robot: Autonomous Two-Wheeled Indoor Patient Support and Medicine Carrier Robot with Cascade PID Control"
+authors:
+  - family-names: "Senturk"
+    given-names: "Berkay"
+    affiliation: "Yildiz Technical University"
+version: 1.0.0
+date-released: 2026-11-01
+license: MIT
+repository-code: "https://github.com/brkaysenturk/self-balancing-robot"
+keywords:
+  - "self-balancing robot"
+  - "inverted pendulum"
+  - "cascade pid"
+  - "embedded systems"
+  - "esp32"
+  - "webots"

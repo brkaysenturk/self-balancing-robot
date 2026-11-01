@@ -1,0 +1,11 @@
+{
+  "venvPath": ".",
+  "venv": "venv",
+  "extraPaths": [
+    ".",
+    "self_balancing_robot",
+    "webots/controllers/webots_main"
+  ],
+  "reportMissingImports": "none",
+  "typeCheckingMode": "off"
+}
