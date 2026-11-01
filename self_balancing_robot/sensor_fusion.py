@@ -1,17 +1,30 @@
 """
-Tamamlayıcı Filtre & Sensör Füzyonu
-MPU-6050 jiroskop ve ivmeölçer verilerini birleştirerek gürültüden arındırılmış gövde eğim açısını kestirir.
-ESP32 donanım firmware algoritmasıyla birebir uyumludur.
+================================================================================
+MODUL: TAMAMLAYICI FILTRE VE SENSOR FUZYONU (SENSOR FUSION)
+================================================================================
+MPU-6050 jiroskop ve ivmeolcer verilerini birlestirerek gurultuden arindirilmis
+govde egim acisini (%98 Gyro + %2 Accel) ve EMA filtreli acisal hizi deterministik
+olarak kestiren saf filtre modülüdür.
+================================================================================
 """
 
 import math
-import random
+
+from .config import CONFIG
+
 
 class SensorFusion:
-    def __init__(self, gyro_noise_std: float = 0.002, accel_noise_std: float = 0.012, alpha: float = 0.98):
-        self.gyro_noise_std = gyro_noise_std
-        self.accel_noise_std = accel_noise_std
+    """Deterministik tamamlayıcı filtre (%98 Jiroskop + %2 İvmeölçer) ve açısal hız EMA filtresi."""
+
+    def __init__(
+        self,
+        alpha: float = CONFIG.fusion.alpha,
+        rate_ema_alpha: float = CONFIG.fusion.rate_ema_alpha,
+        min_accel_z_g: float = CONFIG.fusion.min_accel_z_g,
+    ):
         self.alpha = alpha
+        self.rate_ema_alpha = rate_ema_alpha
+        self.min_accel_z_g = min_accel_z_g
         self.pitch_est = 0.0
         self.filtered_rate = 0.0
         self.initialized = False
@@ -21,30 +34,26 @@ class SensorFusion:
         Sensör verilerini işler, tamamlayıcı filtre ve gyro türev filtresi uygular.
         Dönüş: (pitch_angle_rad, filtered_rate_rads)
         """
-        # Gerçekçi Gauss beyaz gürültüsü enjeksiyonu
-        noisy_rate = gyro_x + random.gauss(0.0, self.gyro_noise_std)
-        noisy_ay = accel_y + random.gauss(0.0, self.accel_noise_std)
-        noisy_az = accel_z + random.gauss(0.0, self.accel_noise_std)
-
-        # İvmeölçer statik eğim açısı
-        accel_pitch = math.atan2(noisy_ay, noisy_az) if abs(noisy_az) > 0.01 else 0.0
+        accel_pitch = math.atan2(accel_y, accel_z) if abs(accel_z) > self.min_accel_z_g else 0.0
 
         if not self.initialized:
             self.pitch_est = accel_pitch
-            self.filtered_rate = noisy_rate
+            self.filtered_rate = gyro_x
             self.initialized = True
             return self.pitch_est, self.filtered_rate
 
         # Tamamlayıcı Filtre (%98 Gyro integrali + %2 İvmeölçer açısı)
-        self.pitch_est = self.alpha * (self.pitch_est + noisy_rate * dt) + (1.0 - self.alpha) * accel_pitch
+        self.pitch_est = self.alpha * (self.pitch_est + gyro_x * dt) + (1.0 - self.alpha) * accel_pitch
 
         # Jiroskop alçak geçiren filtre (EMA - 50 Hz ayrık titremeyi önler)
-        self.filtered_rate = 0.70 * self.filtered_rate + 0.30 * noisy_rate
+        self.filtered_rate = (
+            (1.0 - self.rate_ema_alpha) * self.filtered_rate + self.rate_ema_alpha * gyro_x
+        )
 
         return self.pitch_est, self.filtered_rate
 
-    def reset(self):
+    def reset(self) -> None:
+        """Filtre durumunu başlangıç değerlerine sıfırlar."""
         self.pitch_est = 0.0
         self.filtered_rate = 0.0
         self.initialized = False
-
