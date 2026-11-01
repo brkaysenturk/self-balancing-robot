@@ -25,6 +25,14 @@ WorldInfo {
       ]
       bounce 0.02
     }
+    ContactProperties {
+      material1 "default"
+      material2 "dock_guide"
+      coulombFriction [
+        0.02
+      ]
+      bounce 0.01
+    }
   ]
 }
 
@@ -42,16 +50,16 @@ TexturedBackgroundLight {
 }
 
 RectangleArena {
-  floorSize 12 12
+  floorSize 4.0 4.0
   floorAppearance PBRAppearance {
-    baseColor 0.88 0.86 0.82
-    roughness 0.4
+    baseColor 0.36 0.38 0.41
+    roughness 0.55
     metalness 0.05
   }
-  wallHeight 1.5
+  wallHeight 0.85
   wallAppearance PBRAppearance {
-    baseColor 0.94 0.94 0.95
-    roughness 0.6
+    baseColor 0.72 0.74 0.77
+    roughness 0.65
     metalness 0.0
   }
 }
@@ -95,7 +103,7 @@ DEF cdtp_balance_robot Robot {
           name "left_encoder"
         }
       ]
-      endPoint Solid {
+      endPoint DEF pid_left_wheel Solid {
         name "left_wheel"
         translation -0.085 0 0
         rotation 0 1 0 1.57079632679
@@ -150,7 +158,7 @@ DEF cdtp_balance_robot Robot {
           name "right_encoder"
         }
       ]
-      endPoint Solid {
+      endPoint DEF pid_right_wheel Solid {
         name "right_wheel"
         translation 0.085 0 0
         rotation 0 1 0 1.57079632679
@@ -371,6 +379,45 @@ DEF cdtp_balance_robot Robot {
       ]
     }
 
+    # 2x TSSP4038 / TSOP38438 38 kHz IR Alıcı Gözleri (Katman 3 Ön Kenar, 85 mm Aralıklı: X = +/- 0.0425 m)
+    Transform {
+      translation -0.0425 0.0475 0.088
+      children [
+        DEF TSOP_RECEIVER_SHAPE Shape {
+          appearance PBRAppearance {
+            baseColor 0.08 0.08 0.10
+            roughness 0.2
+            metalness 0.3
+          }
+          geometry Box {
+            size 0.006 0.005 0.007
+          }
+        }
+      ]
+    }
+    Transform {
+      translation 0.0425 0.0475 0.088
+      children [
+        USE TSOP_RECEIVER_SHAPE
+      ]
+    }
+
+    # TCRT5000 Kızılötesi Yakınlık / Duruş Sensörü (Katman 1 Ön Tampon Merkezi, X = 0, Y = 0.0475 m)
+    Transform {
+      translation 0 0.0475 0.014
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.08 0.28 0.75
+            roughness 0.35
+          }
+          geometry Box {
+            size 0.014 0.006 0.008
+          }
+        }
+      ]
+    }
+
     # Katman 4 Aspirin / Parol Kaset Yuvası Çerçevesi (Holster Rim)
     Transform {
       translation 0 0.014 0.1355
@@ -441,17 +488,17 @@ DEF cdtp_balance_robot Robot {
       ]
     }
 
-    # Durum/Şarj LEDi
+    # Durum/Yanaşma LEDi (Normalde Sönük, Yanaşmada Sarı, İstasyona Oturduğunda Parlak Yeşil)
     Transform {
       translation 0 0.035 0.129
       children [
         Shape {
-          appearance PBRAppearance {
-            baseColor 0.1 1.0 0.2
-            emissiveColor 0.1 0.8 0.2
+          appearance DEF STATUS_LED_MAT PBRAppearance {
+            baseColor 0.22 0.25 0.28
+            emissiveColor 0.0 0.0 0.0
           }
           geometry Sphere {
-            radius 0.003
+            radius 0.0045
           }
         }
       ]
@@ -513,7 +560,7 @@ DEF cdtp_balance_robot Robot {
     ]
   }
 
-  controller "voltage_controller"
+  controller "webots_main"
 }
 
 # ========================================================
@@ -539,5 +586,204 @@ DEF aspirin_box Solid {
   physics Physics {
     density -1
     mass 0.025
+  }
+}
+
+# ========================================================
+# 38 kHz IR VERİCİ FENERİ & HUNİ KILAVUZLU YANAŞMA İSTASYONU (MODÜL C)
+# ========================================================
+# Robot şasi genişliği: 135 mm (X = +/- 67.5 mm), ön tampon Y = +47.5 mm.
+# Huni kılavuz kolları: Tekerleklerin üstünden (Z = 112 mm, Katman 3-4 hizası)
+# 210 mm genişlikten (X = +/- 105 mm) başlayıp 24 derece açıyla daralarak arkada
+# 142 mm (135 mm şasi + 7 mm tolerans, X = +/- 71 mm) yuvaya oturur.
+# Böylece dönen kauçuk tekerlekler yan duvarlara sürtünüp tırmanmaz; yalnız pürüzsüz
+# üst Dekota şasi plakaları huni kılavuzlarından kayarak merkeze tam oturur.
+DEF ir_dock_station Solid {
+  translation 0 1.45 0
+  children [
+    # İstasyon Taban Plakası (280 mm × 200 mm)
+    Transform {
+      translation 0 -0.030 0.003
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.22 0.24 0.28
+            roughness 0.4
+            metalness 0.2
+          }
+          geometry Box {
+            size 0.280 0.200 0.006
+          }
+        }
+      ]
+    }
+    # İstasyon Arka Kule Gövdesi (Robot +Y yönünde yaklaşırken duracağı hedef yüzey)
+    Transform {
+      translation 0 0.045 0.080
+      children [
+        DEF DOCK_BACK_WALL Shape {
+          appearance PBRAppearance {
+            baseColor 0.92 0.93 0.95
+            roughness 0.3
+            metalness 0.05
+          }
+          geometry Box {
+            size 0.240 0.030 0.155
+          }
+        }
+      ]
+    }
+    # Sol ve Sağ Taşıyıcı Yan Dikmeler (Tekerleklerin Dışında: X = +/- 0.115 m)
+    Transform {
+      translation -0.115 -0.025 0.060
+      children [
+        DEF DOCK_PILLAR Shape {
+          appearance PBRAppearance {
+            baseColor 0.22 0.24 0.28
+            roughness 0.4
+            metalness 0.2
+          }
+          geometry Box {
+            size 0.012 0.025 0.115
+          }
+        }
+      ]
+    }
+    Transform {
+      translation 0.115 -0.025 0.060
+      children [
+        USE DOCK_PILLAR
+      ]
+    }
+    # Sol Daralan Şasi Huni Kılavuzu (Genişten Dara: 230 mm -> 144 mm, Z = 112 mm Şasi Hizası)
+    Transform {
+      translation -0.0935 -0.044 0.112
+      rotation 0 0 1 -0.401425728
+      children [
+        DEF DOCK_GUIDE_RAIL Shape {
+          appearance PBRAppearance {
+            baseColor 0.15 0.48 0.82
+            roughness 0.15
+            metalness 0.1
+          }
+          geometry Box {
+            size 0.008 0.115 0.032
+          }
+        }
+      ]
+    }
+    # Sağ Daralan Şasi Huni Kılavuzu (Genişten Dara: 230 mm -> 144 mm, Z = 112 mm Şasi Hizası)
+    Transform {
+      translation 0.0935 -0.044 0.112
+      rotation 0 0 1 0.401425728
+      children [
+        USE DOCK_GUIDE_RAIL
+      ]
+    }
+    # Sol ve Sağ Arka Düz Yuva Yan Kılavuzları (144 mm İç Genişlik = 135 mm Şasi + 9 mm Pay)
+    Transform {
+      translation -0.075 0.015 0.112
+      children [
+        DEF DOCK_STRAIGHT_RAIL Shape {
+          appearance PBRAppearance {
+            baseColor 0.15 0.48 0.82
+            roughness 0.15
+            metalness 0.1
+          }
+          geometry Box {
+            size 0.008 0.030 0.032
+          }
+        }
+      ]
+    }
+    Transform {
+      translation 0.075 0.015 0.112
+      children [
+        USE DOCK_STRAIGHT_RAIL
+      ]
+    }
+    # 38 kHz Kızılötesi (IR) Verici Feneri (Katman 3 IR Alıcı Hizasında Z = 0.130 m)
+    DEF ir_beacon_emitter Transform {
+      translation 0 0.012 0.130
+      rotation 1 0 0 1.57079632679
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.95 0.10 0.25
+            emissiveColor 0.85 0.05 0.15
+            roughness 0.15
+          }
+          geometry Cylinder {
+            height 0.010
+            radius 0.008
+          }
+        }
+      ]
+    }
+    # 30 cm Yarıçaplı Yaklaşma Bölgesi Zemin İşaretçisi (Görsel Kılavuz Halkası)
+    Transform {
+      translation 0 -0.14 0.001
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.15 0.55 0.85
+            transparency 0.72
+            roughness 0.6
+          }
+          geometry Cylinder {
+            height 0.002
+            radius 0.30
+          }
+        }
+      ]
+    }
+  ]
+  name "ir_dock_station"
+  contactMaterial "dock_guide"
+  boundingObject Group {
+    children [
+      Transform {
+        translation 0 0.045 0.080
+        children [
+          Box {
+            size 0.240 0.030 0.155
+          }
+        ]
+      }
+      Transform {
+        translation -0.0935 -0.044 0.112
+        rotation 0 0 1 -0.401425728
+        children [
+          Box {
+            size 0.008 0.115 0.032
+          }
+        ]
+      }
+      Transform {
+        translation 0.0935 -0.044 0.112
+        rotation 0 0 1 0.401425728
+        children [
+          Box {
+            size 0.008 0.115 0.032
+          }
+        ]
+      }
+      Transform {
+        translation -0.075 0.015 0.112
+        children [
+          Box {
+            size 0.008 0.030 0.032
+          }
+        ]
+      }
+      Transform {
+        translation 0.075 0.015 0.112
+        children [
+          Box {
+            size 0.008 0.030 0.032
+          }
+        ]
+      }
+    ]
   }
 }

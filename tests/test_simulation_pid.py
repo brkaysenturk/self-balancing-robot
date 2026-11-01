@@ -4,11 +4,11 @@ Gerçekçi DC motor modeli (Ters EMK + Direnç + Redüktör Sürtünmesi) ve
 ESP32 PWM / Gerilim tabanlı kontrolcünün statik denge ve yük güvenliği performansını doğrular.
 """
 
-import subprocess
-import os
-import sys
 import csv
+import os
 import shutil
+import subprocess
+
 
 def get_webots_executable() -> str:
     """Webots çalıştırılabilir dosya yolunu sistem ve ortam değişkenlerinden bulur."""
@@ -34,21 +34,21 @@ def get_webots_executable() -> str:
         "/snap/bin/webots",
         "/Applications/Webots.app/Contents/MacOS/webots",
     ]
-    for c in candidates:
-        if os.path.exists(c):
-            return c
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
 
     raise FileNotFoundError(
         "Webots çalıştırılabilir dosyası bulunamadı! Lütfen WEBOTS_EXECUTABLE ortam değişkenini ayarlayın."
     )
 
 
-def run_voltage_test():
+def run_pid_test() -> None:
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    world_path = os.path.join(project_root, "webots", "worlds", "cdtp_voltage_world.wbt")
+    world_path = os.path.join(project_root, "webots", "worlds", "webots_self_balancing_robot.wbt")
     webots_exe = get_webots_executable()
 
-    telemetry_path = os.path.join(project_root, "logs", "voltage_telemetry.csv")
+    telemetry_path = os.path.join(project_root, "logs", "pid_telemetry.csv")
     if os.path.exists(telemetry_path):
         try:
             os.remove(telemetry_path)
@@ -56,7 +56,7 @@ def run_voltage_test():
             pass
 
     env = os.environ.copy()
-    env["VOLTAGE_LOG_PATH"] = telemetry_path
+    env["PID_LOG_PATH"] = telemetry_path
     env["WEBOTS_TEST_STEPS"] = "3000"
     # t=15s (adım 1500) anında 1.5 N impuls dürtme kuvveti
     env["TEST_PUSH_COMMANDS"] = "1500:1.5"
@@ -72,7 +72,7 @@ def run_voltage_test():
         env=env,
         capture_output=True,
         text=True,
-        timeout=75
+        timeout=75,
     )
 
     print("=== WEBOTS CIKTISI ===")
@@ -96,7 +96,7 @@ def run_voltage_test():
                 "pitch_deg": float(row["pitch_deg"]),
                 "pos_m": float(row.get("pos_m", 0.0)),
                 "velocity": float(row["vel_meas_mps"]),
-                "cmd_left": float(row["cmd_left_volts"])
+                "cmd_left": float(row["cmd_left_volts"]),
             })
 
     assert len(records) >= 1350, f"Eksik telemetri verisi! Alinan kayit: {len(records)}"
@@ -115,6 +115,6 @@ def run_voltage_test():
 
     print("\n[BASARILI] Gerilim/PWM Tabanlı DC Motor Denge Testi (30s) Eksiksiz Tamamlandı!")
 
-if __name__ == "__main__":
-    run_voltage_test()
 
+if __name__ == "__main__":
+    run_pid_test()
