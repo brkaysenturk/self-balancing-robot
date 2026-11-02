@@ -41,8 +41,8 @@ class PIDControllerTests(unittest.TestCase):
         left, right, pwm_left, pwm_right = controller.compute(0.0, 0.0, 0.0, 0.0, 0.0, 0.01)
 
         self.assertAlmostEqual((left + right) / 2.0, 0.0)
-        # PI sönümleme sağ tekerleğe -0.2 V verir; ters EMK ileri beslemesi +0.306 V ekler
-        self.assertAlmostEqual(right, -0.2 + 0.85 * controller.motor.ke_wheel)
+        # PI sönümleme sağ tekerleğe -KP_TURN V verir; ters EMK ileri beslemesi +0.306 V ekler
+        self.assertAlmostEqual(right, -controller.KP_TURN + 0.85 * controller.motor.ke_wheel)
         self.assertEqual(pwm_left, controller.motor.voltage_to_pwm(left))
         self.assertEqual(pwm_right, controller.motor.voltage_to_pwm(right))
 

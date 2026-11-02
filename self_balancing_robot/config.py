@@ -31,13 +31,13 @@ class MechanicsConfig:
 class ControlConfig:
     """Kaskad PID denge, konum tutma ve diferansiyel PI donus kontrolcu sabitleri."""
 
-    # Ic ve Dis Dongu Kaskad PID Kazanclari (Optuna TPE dogrudan Webots optimal)
-    kp_volt: float = 60.7944           # Aci kazanci (V/rad) ~1.06 V/derece
-    kd_volt: float = 1.2985            # Egim acisal hizi sonumleme gerilimi (V/(rad/s))
-    kv_vel: float = 0.2952             # Hizdan hedef egim sonumlemesi (rad/(m/s))
-    kp_pos: float = 0.1000             # Konumdan hedef egim (rad/m)
-    ki_pos: float = 0.0104             # Konum integrali kazanci (rad/(m*s))
-    kp_vel_drive: float = 0.2486       # Surus ani hiz hatasi hedef acisi kazanci
+    # Ic ve Dis Dongu Kaskad PID Kazanclari (150x100 mm & 830g Govde Optuna TPE Optimal)
+    kp_volt: float = 62.7795           # Aci kazanci (V/rad) ~1.10 V/derece
+    kd_volt: float = 1.0329            # Egim acisal hizi sonumleme gerilimi (V/(rad/s))
+    kv_vel: float = 0.2892             # Hizdan hedef egim sonumlemesi (rad/(m/s))
+    kp_pos: float = 0.2730             # Konumdan hedef egim (rad/m) - artan kutleye karsi sert kilitleme
+    ki_pos: float = 0.0051             # Konum integrali kazanci (rad/(m*s))
+    kp_vel_drive: float = 0.2333       # Surus ani hiz hatasi hedef acisi kazanci
 
     # Kaskad Denge Doyum ve Konum Tutma Esikleri
     max_pitch_target: float = 0.025    # Azami hedef egim acisi (~1.43 derece)
@@ -49,10 +49,10 @@ class ControlConfig:
     back_emf_ff_ratio: float = 0.85    # Tekerlek basina ters EMK ileri besleme orani (%85)
 
     # Enkoder Geri Beslemeli Diferansiyel PI Donus Kontrolu
-    kp_turn: float = 0.20              # Diferansiyel tekerlek hiz hatasi kazanci (V/(rad/s))
-    ki_turn: float = 1.00              # Donus integrali kazanci (V/rad)
-    max_turn_volts: float = 2.00       # Donus icin ayrilan azami diferansiyel gerilim (V)
-    turn_integral_limit: float = 1.50  # Donus anti-windup integral ust siniri (V)
+    kp_turn: float = 0.45              # Diferansiyel tekerlek hiz hatasi kazanci (V/(rad/s))
+    ki_turn: float = 2.50              # Donus integrali kazanci (V/rad)
+    max_turn_volts: float = 3.00       # Donus icin ayrilan azami diferansiyel gerilim (V)
+    turn_integral_limit: float = 2.20  # Donus anti-windup integral ust siniri (V)
     turn_friction_tanh_gain: float = 6.0  # Donus Coulomb surtunme ileri besleme tanh egimi
     turn_damping_ke_ratio: float = 0.15   # Donus viskoz/EMK sonumleme ileri besleme katsayisi
 
@@ -97,7 +97,7 @@ class HomingConfig:
     """Modul C: 38 kHz IR verici feneri ve 2x TSOP38438 diferansiyel IR yanasma parametreleri."""
 
     receiver_spacing_m: float = 0.085          # Katman 3 on kenarda 2x TSOP38438 IR goz araligi (85 mm)
-    receiver_forward_offset_m: float = 0.0475  # Robot merkezinden on kenara IR goz mesafesi (47.5 mm)
+    receiver_forward_offset_m: float = 0.050  # Robot merkezinden on kenara IR goz mesafesi (50.0 mm)
     beacon_half_angle_deg: float = 45.0        # Sartname Modul C: 90 derece yaklasma konisi (yarim aci 45 derece)
     receiver_fov_half_deg: float = 60.0        # TSSP4038 / TSOP38438 IR alici sifirlanma yarim acisi (+/- 45 deg yarim guc, +/- 60 deg kesim)
     max_detection_range_m: float = 0.85        # Siperlikli 38 kHz IR verici efektif algilama menzili (m)

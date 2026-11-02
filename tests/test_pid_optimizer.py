@@ -123,7 +123,7 @@ class DirectTuningTests(unittest.TestCase):
             baseline = {k: getattr(PIDController(), k) for k in tuning.KEYS}
             self.assertEqual(
                 list(baseline.values()),
-                [60.7944, 1.2985, 0.2952, 0.1000, 0.0104, 0.2486],
+                [62.7795, 1.0329, 0.2892, 0.2730, 0.0051, 0.2333],
             )
             calls = []
 
