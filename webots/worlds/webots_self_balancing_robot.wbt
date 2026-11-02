@@ -196,7 +196,7 @@ DEF cdtp_balance_robot Robot {
     }
 
     # ========================================================
-    # 4 KATMANLI ŞASİ PLAKALARI (135 mm × 95 mm × 5 mm Beyaz Dekota)
+    # 4 KATMANLI ŞASİ PLAKALARI (150 mm × 100 mm × 5 mm Beyaz Dekota)
     # ========================================================
     # Katman 1: Taban (Base Deck)
     Transform {
@@ -209,7 +209,7 @@ DEF cdtp_balance_robot Robot {
             metalness 0.0
           }
           geometry Box {
-            size 0.135 0.095 0.005
+            size 0.150 0.100 0.005
           }
         }
       ]
@@ -242,9 +242,9 @@ DEF cdtp_balance_robot Robot {
     # ========================================================
     # 4 ADET M3 PASLANMAZ ÇELİK TİJ (KAFES KOLONLARI)
     # ========================================================
-    # Ön-Sağ Tij Kolonu
+    # Ön-Sağ Tij Kolonu (150x100 mm: X=+69mm, Y=+44mm)
     Transform {
-      translation 0.0615 0.0415 0.0655
+      translation 0.069 0.044 0.0655
       rotation 0 0 1 0
       children [
         DEF TIJ_ROD Shape {
@@ -260,25 +260,25 @@ DEF cdtp_balance_robot Robot {
         }
       ]
     }
-    # Ön-Sol Tij Kolonu
+    # Ön-Sol Tij Kolonu (X=-69mm, Y=+44mm)
     Transform {
-      translation -0.0615 0.0415 0.0655
+      translation -0.069 0.044 0.0655
       rotation 0 0 1 0
       children [
         USE TIJ_ROD
       ]
     }
-    # Arka-Sağ Tij Kolonu
+    # Arka-Sağ Tij Kolonu (X=+69mm, Y=-44mm)
     Transform {
-      translation 0.0615 -0.0415 0.0655
+      translation 0.069 -0.044 0.0655
       rotation 0 0 1 0
       children [
         USE TIJ_ROD
       ]
     }
-    # Arka-Sol Tij Kolonu
+    # Arka-Sol Tij Kolonu (X=-69mm, Y=-44mm)
     Transform {
-      translation -0.0615 -0.0415 0.0655
+      translation -0.069 -0.044 0.0655
       rotation 0 0 1 0
       children [
         USE TIJ_ROD
@@ -314,9 +314,9 @@ DEF cdtp_balance_robot Robot {
       ]
     }
 
-    # TB6612FNG Sürücü (Katman 1 Tabanında)
+    # TB6612FNG Sürücü (Katman 1 Tabanında - Tam Merkezde)
     Transform {
-      translation 0 -0.018 0.013
+      translation 0 0 0.013
       children [
         Shape {
           appearance PBRAppearance {
@@ -330,7 +330,23 @@ DEF cdtp_balance_robot Robot {
       ]
     }
 
-    # 3S 18650 Li-ion Batarya Paketi (Katman 2 Üzerinde - Ağırlık Merkezi CoM=10cm)
+    # TCRT5000 Kızılötesi Yakınlık / Duruş Sensörü (Katman 1 Ön Tampon Kenarı, X = 0, Y = 0.050 m)
+    Transform {
+      translation 0 0.050 0.014
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.08 0.28 0.75
+            roughness 0.35
+          }
+          geometry Box {
+            size 0.014 0.006 0.008
+          }
+        }
+      ]
+    }
+
+    # 3S 18650 Li-ion Batarya Paketi (Katman 2 Üzerinde Tam Merkezde - CoM Hizası)
     Transform {
       translation 0 0 0.056
       children [
@@ -347,25 +363,92 @@ DEF cdtp_balance_robot Robot {
       ]
     }
 
-    # ESP32 DevKit V1 (Katman 3 Üzerinde)
+    # XL4016 8A Step-Down Regülatör (Katman 2 Sağda, Alüminyum Soğutucu Bloklu)
     Transform {
-      translation 0 -0.015 0.090
+      translation 0.035 -0.015 0.056
       children [
         Shape {
           appearance PBRAppearance {
-            baseColor 0.1 0.1 0.12
+            baseColor 0.82 0.60 0.15
             roughness 0.3
+            metalness 0.8
           }
           geometry Box {
-            size 0.052 0.028 0.006
+            size 0.045 0.032 0.018
           }
         }
       ]
     }
 
-    # MPU-6050 Sensör Modülü (Katman 3 Merkezinde X=0, Y=0)
+    # Mini Güç Dağıtım Kartı (PDB) (Katman 2 Solda, Vidalı Klemensli Pertinaks)
     Transform {
-      translation 0 0.015 0.088
+      translation -0.035 -0.015 0.052
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.35 0.15 0.55
+            roughness 0.4
+          }
+          geometry Box {
+            size 0.035 0.030 0.010
+          }
+        }
+      ]
+    }
+
+    # KCD11 Güç Switchi (Katman 2 Arka Sol Köşede - Kolay Ulaşılabilir)
+    Transform {
+      translation -0.055 -0.032 0.054
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.9 0.15 0.1
+            roughness 0.2
+          }
+          geometry Box {
+            size 0.019 0.013 0.012
+          }
+        }
+      ]
+    }
+
+    # 3A Cam Sigorta Yuvası Kapağı (Katman 2 Arka Sağ Köşede)
+    Transform {
+      translation 0.055 -0.032 0.054
+      rotation 0 0 1 0
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.1 0.1 0.1
+            roughness 0.6
+          }
+          geometry Cylinder {
+            height 0.012
+            radius 0.006
+          }
+        }
+      ]
+    }
+
+    # ESP32 38-Pin Vidalı Terminal Shield & ESP32-WROOM (Katman 3 Ön Bölge)
+    Transform {
+      translation 0 0.022 0.092
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.10 0.45 0.40
+            roughness 0.35
+          }
+          geometry Box {
+            size 0.065 0.038 0.012
+          }
+        }
+      ]
+    }
+
+    # MPU-6050 Sensör Modülü (Katman 3 Geometrik Merkezinde X=0, Y=0)
+    Transform {
+      translation 0 0 0.088
       children [
         Shape {
           appearance PBRAppearance {
@@ -379,9 +462,9 @@ DEF cdtp_balance_robot Robot {
       ]
     }
 
-    # 2x TSSP4038 / TSOP38438 38 kHz IR Alıcı Gözleri (Katman 3 Ön Kenar, 85 mm Aralıklı: X = +/- 0.0425 m)
+    # 2x TSSP4038 / TSOP38438 38 kHz IR Alıcı Gözleri (Katman 3 Ön Kenar Y=0.050m, 85 mm Aralıklı: X = +/- 0.0425 m)
     Transform {
-      translation -0.0425 0.0475 0.088
+      translation -0.0425 0.050 0.088
       children [
         DEF TSOP_RECEIVER_SHAPE Shape {
           appearance PBRAppearance {
@@ -396,29 +479,13 @@ DEF cdtp_balance_robot Robot {
       ]
     }
     Transform {
-      translation 0.0425 0.0475 0.088
+      translation 0.0425 0.050 0.088
       children [
         USE TSOP_RECEIVER_SHAPE
       ]
     }
 
-    # TCRT5000 Kızılötesi Yakınlık / Duruş Sensörü (Katman 1 Ön Tampon Merkezi, X = 0, Y = 0.0475 m)
-    Transform {
-      translation 0 0.0475 0.014
-      children [
-        Shape {
-          appearance PBRAppearance {
-            baseColor 0.08 0.28 0.75
-            roughness 0.35
-          }
-          geometry Box {
-            size 0.014 0.006 0.008
-          }
-        }
-      ]
-    }
-
-    # Katman 4 Aspirin / Parol Kaset Yuvası Çerçevesi (Holster Rim)
+    # Katman 4 Aspirin / Parol Kaset Yuvası Çerçevesi (Holster Rim - 80 × 26 mm)
     Transform {
       translation 0 0.014 0.1355
       children [
@@ -454,43 +521,9 @@ DEF cdtp_balance_robot Robot {
       ]
     }
 
-    # KCD11 Güç Switchi (Kırmızı Rocker Switch)
+    # Durum/Yanaşma LEDi (Katman 4 Ön Kenar Ortası - Normalde Sönük, Yanaşmada Sarı, Şarjda Yeşil)
     Transform {
-      translation -0.035 -0.030 0.130
-      children [
-        Shape {
-          appearance PBRAppearance {
-            baseColor 0.9 0.15 0.1
-            roughness 0.2
-          }
-          geometry Box {
-            size 0.019 0.013 0.008
-          }
-        }
-      ]
-    }
-
-    # 3A Cam Sigorta Yuvası Kapağı
-    Transform {
-      translation 0.035 -0.030 0.130
-      rotation 0 0 1 0
-      children [
-        Shape {
-          appearance PBRAppearance {
-            baseColor 0.1 0.1 0.1
-            roughness 0.6
-          }
-          geometry Cylinder {
-            height 0.008
-            radius 0.006
-          }
-        }
-      ]
-    }
-
-    # Durum/Yanaşma LEDi (Normalde Sönük, Yanaşmada Sarı, İstasyona Oturduğunda Parlak Yeşil)
-    Transform {
-      translation 0 0.035 0.129
+      translation 0 0.042 0.129
       children [
         Shape {
           appearance DEF STATUS_LED_MAT PBRAppearance {
@@ -505,14 +538,24 @@ DEF cdtp_balance_robot Robot {
     }
   ]
 
-  # Gövde Çarpışma Hacmi (BoundingObject)
+  # Gövde Çarpışma Hacmi (BoundingObject - İki Kademeli: Tekerlek Arası ve Üst Şasi)
   boundingObject Group {
     children [
+      # Alt Şasi Bloğu (Tekerlekler Arası Boşluk: 120 mm Genişlik)
       Transform {
-        translation 0 0 0.065
+        translation 0 0 0.025
         children [
           Box {
-            size 0.120 0.095 0.120
+            size 0.120 0.100 0.045
+          }
+        ]
+      }
+      # Üst Şasi Bloğu (Katman 2-4: 150 mm Tam Genişlik)
+      Transform {
+        translation 0 0 0.085
+        children [
+          Box {
+            size 0.150 0.100 0.075
           }
         ]
       }
@@ -554,7 +597,7 @@ DEF cdtp_balance_robot Robot {
 
   physics Physics {
     density -1
-    mass 0.72
+    mass 0.83
     centerOfMass [
       0 0 0.055
     ]
@@ -592,16 +635,15 @@ DEF aspirin_box Solid {
 # ========================================================
 # 38 kHz IR VERİCİ FENERİ & HUNİ KILAVUZLU YANAŞMA İSTASYONU (MODÜL C)
 # ========================================================
-# Robot şasi genişliği: 135 mm (X = +/- 67.5 mm), ön tampon Y = +47.5 mm.
+# Robot şasi genişliği: 150 mm (X = +/- 75 mm), ön tampon Y = +50 mm.
 # Huni kılavuz kolları: Tekerleklerin üstünden (Z = 112 mm, Katman 3-4 hizası)
-# 210 mm genişlikten (X = +/- 105 mm) başlayıp 24 derece açıyla daralarak arkada
-# 142 mm (135 mm şasi + 7 mm tolerans, X = +/- 71 mm) yuvaya oturur.
+# 240 mm genişlikten başlayıp daralarak arkada 162 mm yuvaya oturur (150 mm şasi + 12 mm tolerans).
 # Böylece dönen kauçuk tekerlekler yan duvarlara sürtünüp tırmanmaz; yalnız pürüzsüz
 # üst Dekota şasi plakaları huni kılavuzlarından kayarak merkeze tam oturur.
 DEF ir_dock_station Solid {
   translation 0 1.45 0
   children [
-    # İstasyon Taban Plakası (280 mm × 200 mm)
+    # İstasyon Taban Plakası (300 mm × 200 mm)
     Transform {
       translation 0 -0.030 0.003
       children [
@@ -612,7 +654,7 @@ DEF ir_dock_station Solid {
             metalness 0.2
           }
           geometry Box {
-            size 0.280 0.200 0.006
+            size 0.300 0.200 0.006
           }
         }
       ]
@@ -628,14 +670,14 @@ DEF ir_dock_station Solid {
             metalness 0.05
           }
           geometry Box {
-            size 0.240 0.030 0.155
+            size 0.280 0.030 0.155
           }
         }
       ]
     }
-    # Sol ve Sağ Taşıyıcı Yan Dikmeler (Tekerleklerin Dışında: X = +/- 0.115 m)
+    # Sol ve Sağ Taşıyıcı Yan Dikmeler (Tekerleklerin Dışında: X = +/- 0.125 m)
     Transform {
-      translation -0.115 -0.025 0.060
+      translation -0.125 -0.025 0.060
       children [
         DEF DOCK_PILLAR Shape {
           appearance PBRAppearance {
@@ -650,15 +692,15 @@ DEF ir_dock_station Solid {
       ]
     }
     Transform {
-      translation 0.115 -0.025 0.060
+      translation 0.125 -0.025 0.060
       children [
         USE DOCK_PILLAR
       ]
     }
-    # Sol Daralan Şasi Huni Kılavuzu (Genişten Dara: 230 mm -> 144 mm, Z = 112 mm Şasi Hizası)
+    # Sol Daralan Şasi Huni Kılavuzu (Genişten Dara: 240 mm -> 162 mm, Z = 112 mm Şasi Hizası)
     Transform {
-      translation -0.0935 -0.044 0.112
-      rotation 0 0 1 -0.401425728
+      translation -0.104 -0.0475 0.112
+      rotation 0 0 1 -0.3756
       children [
         DEF DOCK_GUIDE_RAIL Shape {
           appearance PBRAppearance {
@@ -667,22 +709,22 @@ DEF ir_dock_station Solid {
             metalness 0.1
           }
           geometry Box {
-            size 0.008 0.115 0.032
+            size 0.008 0.105 0.032
           }
         }
       ]
     }
-    # Sağ Daralan Şasi Huni Kılavuzu (Genişten Dara: 230 mm -> 144 mm, Z = 112 mm Şasi Hizası)
+    # Sağ Daralan Şasi Huni Kılavuzu (Genişten Dara: 240 mm -> 162 mm, Z = 112 mm Şasi Hizası)
     Transform {
-      translation 0.0935 -0.044 0.112
-      rotation 0 0 1 0.401425728
+      translation 0.104 -0.0475 0.112
+      rotation 0 0 1 0.3756
       children [
         USE DOCK_GUIDE_RAIL
       ]
     }
-    # Sol ve Sağ Arka Düz Yuva Yan Kılavuzları (144 mm İç Genişlik = 135 mm Şasi + 9 mm Pay)
+    # Sol ve Sağ Arka Düz Yuva Yan Kılavuzları (162 mm İç Genişlik = 150 mm Şasi + 12 mm Pay)
     Transform {
-      translation -0.075 0.015 0.112
+      translation -0.085 0.015 0.112
       children [
         DEF DOCK_STRAIGHT_RAIL Shape {
           appearance PBRAppearance {
@@ -697,7 +739,7 @@ DEF ir_dock_station Solid {
       ]
     }
     Transform {
-      translation 0.075 0.015 0.112
+      translation 0.085 0.015 0.112
       children [
         USE DOCK_STRAIGHT_RAIL
       ]
@@ -746,30 +788,30 @@ DEF ir_dock_station Solid {
         translation 0 0.045 0.080
         children [
           Box {
-            size 0.240 0.030 0.155
+            size 0.280 0.030 0.155
           }
         ]
       }
       Transform {
-        translation -0.0935 -0.044 0.112
-        rotation 0 0 1 -0.401425728
+        translation -0.104 -0.0475 0.112
+        rotation 0 0 1 -0.3756
         children [
           Box {
-            size 0.008 0.115 0.032
+            size 0.008 0.105 0.032
           }
         ]
       }
       Transform {
-        translation 0.0935 -0.044 0.112
-        rotation 0 0 1 0.401425728
+        translation 0.104 -0.0475 0.112
+        rotation 0 0 1 0.3756
         children [
           Box {
-            size 0.008 0.115 0.032
+            size 0.008 0.105 0.032
           }
         ]
       }
       Transform {
-        translation -0.075 0.015 0.112
+        translation -0.085 0.015 0.112
         children [
           Box {
             size 0.008 0.030 0.032
@@ -777,7 +819,7 @@ DEF ir_dock_station Solid {
         ]
       }
       Transform {
-        translation 0.075 0.015 0.112
+        translation 0.085 0.015 0.112
         children [
           Box {
             size 0.008 0.030 0.032

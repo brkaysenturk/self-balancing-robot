@@ -69,11 +69,11 @@ Sistem, ev veya hastane ortamında yatağa bağımlı bir hastanın ihtiyacı ol
 
 | Alt Sistem | Uygulama | Görevi |
 | :--- | :--- | :--- |
-| **Gövde & Şasi** | 135 × 95 mm Altın Oran, 4 katmanlı 5 mm Beyaz Dekota, 4x M3 tij | Darbe emici, rijit kutu kafes ve dahili dikey kablo bacası |
+| **Gövde & Şasi** | 150 × 100 mm 4 katmanlı 5 mm Beyaz Dekota, 4x M3 tij | Darbe emici, rijit kutu kafes ve 40×20 mm dikey kablo bacası |
 | **Sensör Füzyonu** | GY-521 MPU-6050 (X=0, Y=0 merkezinde), 100 Hz Tamamlayıcı Filtre | %98 Jiroskop integrali + %2 İvmeölçer ile kaymasız eğim kestirimi |
 | **Kontrol Mimarisi** | Çift Döngülü Kaskad PID, Ters EMK İleri Besleme, Enkoderli PI Dönüş | Düşmeyi engelleyen iç döngü (100 Hz) ve konum çıpalayan dış döngü |
 | **Tahrik Sistemi** | 2x JGB37-520 12V DC Redüktörlü Motor, Manyetik Enkoder, 85 mm Tekerlek | Yüksek torklu diferansiyel sürüş ve milimetrik odometri |
-| **Sürücü & Güç** | TB6612FNG MOSFET (Katman 1'de 3 cm hatla EMI izolasyonu) + XL4015 5A | 12V motor ve 5V lojik besleme hatları |
+| **Sürücü & Güç** | TB6612FNG MOSFET (Katman 1 merkezde 3 cm hatla EMI izolasyonu) + XL4016 8A | 12V motor ve 5V lojik besleme hatları, mini PDB |
 | **Batarya Paketi** | 3S1P 18650 Li-ion (11.1V, 2000 mAh) + 3S 10A BMS + 3A Cam Sigorta | 2 saat kesintisiz çalışma ve aşırı akım emniyeti |
 | **Kablosuz İletişim** | ESP-NOW 2.4 GHz Doğrudan MAC Katmanı (1-2 ms gecikme) | Router/Wi-Fi gerektirmeyen güvenilir eldiven-robot linki |
 | **Giyilebilir Eldiven** | ESP32 + MPU-6050 sensörlü esnek eldiven | Operatör el eğimini anlık 5 sürüş komutuna dönüştürür |
@@ -116,19 +116,19 @@ Sistem dört ana katmandan oluşur. Üst katmanlar stratejik referans üretir, a
 
 ## 4. Mekanik ve Şasi Mimarisi
 
-Şasi ölçüleri, hammadde verimliliği ve ağırlık merkezi dengesi dikkate alınarak **135 mm Genişlik × 95 mm Derinlik (Altın Oran)** standardında tasarlanmıştır:
+Şasi ölçüleri, montaj kolaylığı, batarya/regülatör yerleşimi ve ağırlık merkezi dengesi dikkate alınarak **150 mm Genişlik × 100 mm Derinlik (15 × 10 cm Dekota)** standardında tasarlanmıştır:
 
-- **Doğal Tampon Koruma:** 85 mm çapındaki tekerlekler, 95 mm şasi derinliğinin içinde kalır; şasi tekerleklerin önünden ve arkasından 5'er mm taşarak engellere karşı doğal tampon görevi görür.
-- **Motor İçi Kablo Koridoru:** 135 mm plaka genişliği sayesinde tabandaki iki motor arasında 35 mm açık kablo geçiş koridoru kalır.
-- **Dikey Kablo Bacası (Conduit Riser):** Tüm katmanlarda birebir aynı koordinatta (`X=67.5 mm`, `Y=22 mm`) açılan 32 × 12 mm şaft sayesinde hiçbir kablo dışarı sarkmaz; tekerleklere dolanma riski sıfırdır.
-- **Kesintisiz M3 Tij (Gijon) Kafesi:** Titreşimle gevşeyen pirinç distanslar yerine, tabandan tavana uzanan 4 adet paslanmaz M3 tij, pul ve somunlarla sıkıştırılarak monolitik kutu kafes (box-truss) yapısı elde edilmiştir.
+- **Doğal Tampon Koruma:** 85 mm çapındaki tekerlekler, 100 mm şasi derinliğinin içinde kalır; şasi tekerleklerin önünden ve arkasından 7.5'ar mm taşarak engellere karşı doğal tampon görevi görür.
+- **Geniş Donanım ve Koridor Alanı:** 150 mm plaka genişliği sayesinde Katman 2'de 3S 18650 batarya, XL4016 regülatör ve Mini PDB kartı genişçe yerleşir; motorlar arasında açık kablo koridoru kalır.
+- **Dikey Kablo Bacası (Conduit Riser):** Tüm katmanlarda birebir aynı hizada açılan 40 × 20 mm geniş şaft sayesinde hiçbir kablo dışarı sarkmaz; tekerleklere dolanma riski sıfırdır.
+- **Kesintisiz M3 Tij (Gijon) Kafesi:** Titreşimle gevşeyen pirinç distanslar yerine, tabandan tavana uzanan 4 adet paslanmaz M3 tij, pul ve somunlarla sıkıştırılarak monolitik kutu kafes (box-truss) yapısı elde edilmiştir. Tij delikleri plaka köşelerinden 6 mm içeridedir (`X = +/- 69 mm`, `Y = +/- 44 mm`).
 
 ### 4 Katmanın İşlev Dağılımı
 
-1. **Katman 1 (Taban / Base Deck):** JGB37 motor L-braketleri, TB6612FNG motor sürücüsü, şarj temas pedleri ve kablo bacası.
-2. **Katman 2 (Güç / Power Deck):** 3S 18650 Li-ion batarya paketi (Ağırlık merkezi CoM = 10 cm hizası), XL4015 5A regülatör ve kablo bacası.
-3. **Katman 3 (Beyin / Brain Deck):** ESP32 DevKit V1, MPU-6050 (tam merkez X=0, Y=0), 2x TSOP38438 IR gözleri ve kablo bacası.
-4. **Katman 4 (Tavan / Top Deck):** 80 × 26 mm Aspirin kaset yuvası, KCD11 rocker switch, 3A cam sigorta yuvası ve durum LED'i.
+1. **Katman 1 (Taban / Base Deck):** JGB37 motor L-braketleri, TB6612FNG motor sürücüsü (merkezde), şarj temas pedleri ve 40×20 mm kablo bacası.
+2. **Katman 2 (Güç / Power Deck):** 3S 18650 Li-ion batarya paketi (Ağırlık merkezi CoM = 10 cm hizası), XL4016 8A regülatör, mini PDB, KCD11 switch ve 3A cam sigorta.
+3. **Katman 3 (Beyin / Brain Deck):** ESP32 DevKit V1 + 38-pin vidalı terminal shield, MPU-6050 (tam merkez X=0, Y=0), 2x TSOP38438 IR gözleri ve kablo bacası.
+4. **Katman 4 (Tavan / Top Deck):** 80 × 26 mm Aspirin kaset yuvası, durum LED'i ve mini kablo bacası (sadece LED kablosu için).
 
 ---
 
@@ -136,8 +136,8 @@ Sistem dört ana katmandan oluşur. Üst katmanlar stratejik referans üretir, a
 
 ### Güç Dağıtım Hattı
 
-- **12V Ham Batarya Hattı:** Batarya (+) ➔ Katman 4 Sigorta (3A) ➔ KCD11 Switch ➔ Katman 1 TB6612 `VM` pini & Katman 2 XL4015 `IN(+)`.
-- **5V Lojik Hattı:** XL4015 5.0V çıkışı ➔ Katman 3 ESP32 `VIN` pini, TB6612 `VCC` pini ve Manyetik Enkoder beslemeleri.
+- **12V Ham Batarya Hattı:** Batarya (+) ➔ Katman 2 Sigorta (3A) ➔ KCD11 Switch ➔ Katman 1 TB6612 `VM` pini & Katman 2 XL4016 `IN(+)`.
+- **5V Lojik Hattı:** XL4016 5.0V çıkışı ➔ Katman 3 ESP32 `VIN` pini, TB6612 `VCC` pini ve Manyetik Enkoder beslemeleri.
 - **3.3V Sensör Hattı:** ESP32 dahili 3.3V LDO ➔ MPU-6050 `VCC` ve TSOP38438 `VCC`.
 
 ### EMI İzolasyon Kararı

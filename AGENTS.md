@@ -35,13 +35,13 @@
 
 ## 3. Mekanik Mimari & Tasarım Kararları
 
-### 3.1. Şasi Ölçüleri: 135 mm Genişlik × 95 mm Derinlik (Altın Oran)
+### 3.1. Şasi Ölçüleri: 150 mm Genişlik × 100 mm Derinlik (15 × 10 cm Dekota)
 
-- **Neden 135 × 95 mm?**
-  - **Tekerlek Koruması (Doğal Tampon):** Tekerlek çapı 85 mm, şasi derinliği 95 mm'dir. Şasi, tekerleklerin önünden ve arkasından 5'er mm taşarak engellere karşı tampon görevi görür.
-  - **Motor İçi Kablo Koridoru:** 135 mm plaka genişliği sayesinde tabandaki iki JGB37 motor arasında 35 mm açık kablo koridoru kalır.
-  - **İlaç Kutusu Oranı:** Katman 4'teki 80 × 26 mm kaset yuvası plakanın ortasında dengeli durur; sağında ve solunda 27 mm, ön/arkasında 35 mm et payı bırakır.
-  - **Hammadde Verimi:** 4 katmanın tamamı standart 20 × 30 cm Dekota tabakasına (27 × 19 cm yerleşimle) sıfır israfla sığar; 35 × 50 cm tabakadan ise 8-9 plaka çıkar.
+- **Neden 150 × 100 mm?**
+  - **Tekerlek Koruması (Doğal Tampon):** Tekerlek çapı 85 mm, şasi derinliği 100 mm'dir. Şasi, tekerleklerin önünden ve arkasından 7.5'ar mm taşarak engellere karşı güçlü tampon görevi görür.
+  - **Geniş Güç ve Shield Alanı:** 150 mm genişlik sayesinde Katman 2'de 3S 18650 batarya, XL4016 alüminyum soğutuculu regülatör ve Mini PDB klemens kartı rahatça yerleşir. Katman 3'te ise 38-pin vidalı terminal shield için geniş montaj payı kalır.
+  - **İlaç Kutusu Oranı:** Katman 4'teki 80 × 26 mm kaset yuvası plakanın tam ortasında dengeli durur; üst kat yüksek akımlı güç hatlarından tamamen arındırılmıştır.
+  - **Hammadde Verimi:** 4 katmanın tamamı standart 35 × 50 cm Dekota tabakasından sıfır fire ve rahat kesim payıyla çıkar.
 
 ### 3.2. Malzeme Seçimi: 5 mm Beyaz Dekota (Forex) & 3 mm Pleksi
 
@@ -53,19 +53,19 @@
 ### 3.3. Tij (Gijon) vs. Distans (Standoff) Kararı
 
 - **Problem:** Modüler pirinç/naylon distanslar motor titreşimlerinde vida dişlerinden gevşer ve katmanlar üst üste eklendikçe gövdede esnemeye yol açar. Bu mekanik esneme MPU-6050 sensörüne yalancı açısal ivme basarak PID döngüsünü kararsızlaştırır.
-- **Çözüm:** Taban katmanından en üst kata kadar uzanan **4 adet kesintisiz M3 paslanmaz çelik tij (gijon)** kullanıldı. Her katman altından ve üstünden M3 pul ve somunla sıkıştırılarak monolitik kutu kafes (box-truss) yapısı elde edildi.
+- **Çözüm:** Taban katmanından en üst kata kadar uzanan **4 adet kesintisiz M3 paslanmaz çelik tij (gijon - 12.5 cm boy)** kullanıldı. Her katman altından ve üstünden M3 pul ve somunla sıkıştırılarak monolitik kutu kafes (box-truss) yapısı elde edildi. Tij delikleri 150×100 mm plaka köşelerinden 6 mm içeridedir (`X = +/- 69 mm`, `Y = +/- 44 mm`).
 
 ### 3.4. Dikey Kablo Bacası (Conduit Riser) Mimarisi
 
-- Tüm katmanlarda birebir aynı koordinatta (`X=67.5 mm`, `Y=22 mm`) **32 mm × 12 mm** dikey kablo bacası açıldı.
+- Tüm katmanlarda birebir aynı koordinatta (`X=0 mm`, `Y=-20 mm` / referansta `X=75 mm, Y=25 mm`) **40 mm × 20 mm** genişletilmiş dikey kablo bacası açıldı.
 - Kablolar şasinin dışından sarkmaz; asansör bacası gibi içeriden yukarı çıkar. Tekerleklere dolanma veya dış engellere takılma riski sıfırdır.
 
 ### 3.5. 4 Katmanın İşlev Dağılımı
 
-1. **Katman 1 (Taban / Base Deck):** JGB37 Motor L-braketleri, **TB6612FNG Motor Sürücüsü**, Şarj temas pedleri (2x 12×5 mm), Dikey kablo bacası.
-2. **Katman 2 (Güç / Power Deck):** 3S 18650 Li-ion batarya paketi (Ağırlık merkezi CoM = 10 cm hizası), XL4015 5A regülatör, velcro kayış yarıkları, Dikey kablo bacası.
-3. **Katman 3 (Kontrol / Brain Deck):** ESP32 DevKit V1, **MPU-6050 (Tam merkez X=0, Y=0)**, Ön kenarda 85 mm aralıklı 2x TSOP38438 IR gözleri, Dikey kablo bacası.
-4. **Katman 4 (Tavan / Top Deck):** **80 × 26 mm Aspirin/Parol kaset yuvası**, KCD11 Rocker Switch (19×13 mm), 3A Panel Tipi Cam Sigorta Yuvası (Ø12.2 mm), Durum/Şarj LED'i (Ø5.0 mm).
+1. **Katman 1 (Taban / Base Deck):** JGB37 Motor L-braketleri, **TB6612FNG Motor Sürücüsü (Merkezde)**, Şarj temas pedleri (2x 15×6 mm), Dikey kablo bacası (40×20 mm).
+2. **Katman 2 (Güç / Power Deck):** 3S 18650 Li-ion batarya paketi (Ağırlık merkezi CoM = 10 cm hizası), XL4016 8A regülatör (soğutuculu), Mini PDB kartı, KCD11 Rocker Switch (19×13 mm), 3A Panel Tipi Cam Sigorta (Ø12.2 mm), dikey kablo bacası.
+3. **Katman 3 (Kontrol / Brain Deck):** ESP32 DevKit V1 + 38-Pin Vidalı Terminal Shield, **MPU-6050 (Tam merkez X=0, Y=0)**, Ön kenarda 85 mm aralıklı 2x TSOP38438 IR gözleri, Dikey kablo bacası.
+4. **Katman 4 (Tavan / Top Deck):** **80 × 26 mm Aspirin/Parol kaset yuvası**, Durum/Şarj LED'i (Ø5.0 mm), mini kablo bacası (sadece LED kablosu girişi).
 
 ---
 
@@ -191,17 +191,17 @@ self_balancing_robot/
 ### 7.1. Fiziksel ve Kinematik Modelleme
 
 - **Koordinat Sistemi:** Webots ENU (+X Doğu/Sağ, +Y Kuzey/İleri, +Z Yukarı).
-- **Şasi Ebatları:** 135 mm × 95 mm × 5 mm 4 katmanlı Dekota plaka.
+- **Şasi Ebatları:** 150 mm × 100 mm × 5 mm 4 katmanlı Dekota plaka.
 - **Tekerlekler:** 85 mm çap (yarıçap R = 0.0425 m), 170 mm iz genişliği, kauçuk zemin sürtünmesi (`coulombFriction 1.8`).
-- **Taşıyıcı Kolonlar:** 4 adet M3 paslanmaz çelik tij (Ø3.2 mm, 122 mm boy).
-- **Kütle ve Ağırlık Merkezi:** Toplam kütle 0.86 kg, CoM mil ekseninden 55 mm yukarıda (yerden yaklaşık 97.5 mm).
-- **Bileşenler:** Taban katmanında TB6612FNG ve JGB37 motorlar, Katman 2'de 3S 18650 Li-ion batarya, Katman 3'te ESP32 ve MPU-6050, Katman 4'te Aspirin ilaç kutusu kaseti, switch, sigorta ve durum LED'i.
+- **Taşıyıcı Kolonlar:** 4 adet M3 paslanmaz çelik tij (Ø3.2 mm, 122 mm boy, `X = +/- 69 mm, Y = +/- 44 mm`).
+- **Kütle ve Ağırlık Merkezi:** Gövde kütlesi 0.83 kg, tekerlekler dahil toplam kütle 0.97 kg, CoM mil ekseninden 55 mm yukarıda (yerden yaklaşık 97.5 mm).
+- **Bileşenler:** Taban katmanında TB6612FNG ve JGB37 motorlar, Katman 2'de 3S 18650 Li-ion batarya, XL4016 regülatör, Mini PDB, KCD11 switch ve 3A sigorta; Katman 3'te ESP32 38-pin terminal shield ve MPU-6050; Katman 4'te 80 × 26 mm Aspirin ilaç kutusu kaseti ve durum LED'i.
 
 ### 7.2. Kontrol ve Optimizasyon
 
-- **İç ve Dış Döngü (100 Hz / 10 ms):** İç açı döngüsü 100 Hz PD ile gerilim üretir (`KP_VOLT = 60.7944`, `KD_VOLT = 1.2985`). Sürüşte hız hatası hedef eğime dönüştürülür (`KP_VEL_DRIVE = 0.2486`); duruşta konum PI (`KP_POS = 0.1000`, `KI_POS = 0.0104`) ve hız sönümleme (`KV_VEL = 0.2952`) kullanılır.
+- **İç ve Dış Döngü (100 Hz / 10 ms):** İç açı döngüsü 100 Hz PD ile gerilim üretir (`KP_VOLT = 62.7795`, `KD_VOLT = 1.0329`). Sürüşte hız hatası hedef eğime dönüştürülür (`KP_VEL_DRIVE = 0.2333`); duruşta konum PI (`KP_POS = 0.2730`, `KI_POS = 0.0051`) ve hız sönümleme (`KV_VEL = 0.2892`) kullanılır.
 - **Motor Modeli ve İleri Besleme:** Gerilim komutu; sürtünme telafisi ve tekerlek başına yüzde 85 ters EMK ileri beslemesinden sonra 8 bit PWM üzerinden [dc_motor_model.py](file:///c:/YTU/self-balancing-robot/self_balancing_robot/dc_motor_model.py) modeline uygulanır. Motor modeli armatür direnci, ters EMK, redüktör ve sürtünmeden fiziksel tork hesaplar; kaymayı Webots zemin teması çözer.
-- **Denge Öncelikli PI Dönüş Kontrolü:** Sağ/sol dönüş, iki enkoderin yarı hız farkından PI geri beslemesiyle (`KP_TURN = 0.20`, `KI_TURN = 1.0`) kontrol edilir. Gerilim doyumunda dengeye mutlak öncelik verilir. `TURN_SPEED = 1.2 rad/s` mevcut geometride yaklaşık 34 derece/saniye gövde dönüş hedefidir.
+- **Denge Öncelikli PI Dönüş Kontrolü:** Sağ/sol dönüş, iki enkoderin yarı hız farkından PI geri beslemesiyle (`KP_TURN = 0.45`, `KI_TURN = 2.50`, `MAX_TURN_VOLTS = 3.00 V`) kontrol edilir. Gerilim doyumunda dengeye mutlak öncelik verilir. `TURN_SPEED = 1.2 rad/s` mevcut geometride yaklaşık 34 derece/saniye gövde dönüş hedefidir.
 - **Doğrudan Webots Optimizasyonu:** Yeniden ayar yalnız doğrudan Webots ölçümleriyle yapılır: [optimize_pid_controller.py](file:///c:/YTU/self-balancing-robot/analysis/controllers/pid/optimize_pid_controller.py) Optuna adaylarını, [simulation_runner.py](file:///c:/YTU/self-balancing-robot/analysis/controllers/pid/simulation_runner.py) fizik koşularını ve puanlamayı yönetir. Mevcut kazançlar korunur; arama kaynak değerlerini otomatik değiştirmez.
 - **Donanım Kalibrasyon Sınırları:** Donanım hazır olduğunda motor/enkoder, batarya yük gerilimi, sürücü kayıpları, IMU ofseti ve kütle/ağırlık merkezi ölçülerek model ve donanım ayarı güncellenececek. Öncesinde model sabitlerini ölçülmüş veri saymayın.
 - **Kayıtlar ve Belgeler:** Tam katsayılar ve son test özeti `analysis/controllers/pid/` altında ([pid_candidate_params.json](file:///c:/YTU/self-balancing-robot/analysis/controllers/pid/pid_candidate_params.json), [pid_optuna_results.json](file:///c:/YTU/self-balancing-robot/analysis/controllers/pid/pid_optuna_results.json)) korunur. Model varsayımları [voltage_model.md](file:///c:/YTU/self-balancing-robot/docs/voltage_model.md) ve optimizasyon yöntemi [pid_optimization.md](file:///c:/YTU/self-balancing-robot/docs/pid_optimization.md) belgelerindedir.

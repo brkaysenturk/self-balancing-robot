@@ -88,7 +88,7 @@ def run_homing_test() -> None:
     # 1. Senaryo: Sol-yakın açılı yaklaşma (X = -10 cm, Y = 1.12 m, yaw = -12.6 deg)
     run_single_pose("-0.10,1.12,-0.22", steps=2200)
     # 2. Senaryo: Sağ sınır yaklaşması (30 cm koni içi sağ sınır: X = +14 cm, Y = 1.12 m, yaw = +16 deg)
-    run_single_pose("0.14,1.12,0.28", steps=2400)
+    run_single_pose("0.14,1.12,0.28", steps=2600)
     # 3. Senaryo: Yana/arkaya dönük başlangıç (yaw = +80 deg, IR görüş dışı) -> Olduğu yerde tarama (Scan) yapıp yanaşma
     run_single_pose("0.0,1.15,1.40", steps=2600)
     print("\n[BASARILI] Tüm 38 kHz IR Alıcı-Verici İstasyona Otonom Yanaşma Testleri Tamamlandı!")
