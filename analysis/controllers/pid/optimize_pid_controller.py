@@ -148,7 +148,7 @@ def main() -> None:
     controller = PIDController()
     baseline = {key: getattr(controller, key) for key in KEYS}
 
-    default_out = ROOT / "logs/pid_tuning" / datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    default_out = ROOT / "logs/pid_tuning/optimization" / datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")
     out = (args.output or default_out).resolve()
     out.mkdir(parents=True, exist_ok=False)
 

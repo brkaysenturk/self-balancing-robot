@@ -5,6 +5,7 @@ ESP32 PWM / Gerilim tabanlı kontrolcünün statik denge ve yük güvenliği per
 """
 
 import csv
+from datetime import datetime
 import os
 import shutil
 import subprocess
@@ -48,12 +49,10 @@ def run_pid_test() -> None:
     world_path = os.path.join(project_root, "webots", "worlds", "webots_self_balancing_robot.wbt")
     webots_exe = get_webots_executable()
 
-    telemetry_path = os.path.join(project_root, "logs", "pid_telemetry.csv")
-    if os.path.exists(telemetry_path):
-        try:
-            os.remove(telemetry_path)
-        except Exception:
-            pass
+    telemetry_dir = os.path.join(project_root, "logs", "validation", "pid_balance")
+    os.makedirs(telemetry_dir, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")
+    telemetry_path = os.path.join(telemetry_dir, f"pid_balance_{timestamp}.csv")
 
     env = os.environ.copy()
     env["PID_LOG_PATH"] = telemetry_path

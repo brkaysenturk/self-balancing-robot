@@ -17,10 +17,10 @@ class MechanicsConfig:
     """Robot fiziksel geometrisi, surus hedefleri, yuk kutusu ve emniyet sinirlari."""
 
     wheel_radius: float = 0.0425       # 85 mm tekerlek capi / 2 = 0.0425 m
-    track_width: float = 0.170         # Iki tekerlek arasi iz genisligi 170 mm
+    track_width: float = 0.190         # 150 mm sasi + 35 mm tekerlek + iki yanda 2.5 mm aciklik
     fall_limit_deg: float = 45.0       # Devrilme emniyet kesici siniri (derece)
     drive_speed: float = 0.20          # m/s guvenli nominal surus hizi (Modul B)
-    turn_speed: float = 1.20           # rad/s diferansiyel tekerlek hiz farki (~34 derece/saniye)
+    turn_speed: float = 1.20           # rad/s diferansiyel tekerlek hiz farki (~31 derece/saniye)
     payload_max_dx_m: float = 0.040    # Katman 4 kaset yuvasinda X ekseni azami sapma (m)
     payload_max_dy_m: float = 0.020    # Katman 4 kaset yuvasinda Y ekseni azami sapma (m)
     payload_min_dz_m: float = 0.100    # Katman 4 kaset yuvasinda Z ekseni alt yukseklik siniri (m)
@@ -94,12 +94,12 @@ class FusionConfig:
 
 @dataclass(frozen=True)
 class HomingConfig:
-    """Modul C: 38 kHz IR verici feneri ve 2x TSOP38438 diferansiyel IR yanasma parametreleri."""
+    """Modul C: 38 kHz IR verici feneri ve 2x TSOP2238 diferansiyel IR yanasma parametreleri."""
 
-    receiver_spacing_m: float = 0.085          # Katman 3 on kenarda 2x TSOP38438 IR goz araligi (85 mm)
+    receiver_spacing_m: float = 0.085          # Katman 3 on kenarda 2x TSOP2238 IR goz araligi (85 mm)
     receiver_forward_offset_m: float = 0.050  # Robot merkezinden on kenara IR goz mesafesi (50.0 mm)
     beacon_half_angle_deg: float = 45.0        # Sartname Modul C: 90 derece yaklasma konisi (yarim aci 45 derece)
-    receiver_fov_half_deg: float = 60.0        # TSSP4038 / TSOP38438 IR alici sifirlanma yarim acisi (+/- 45 deg yarim guc, +/- 60 deg kesim)
+    receiver_fov_half_deg: float = 60.0        # Optik simulasyon kesim yarim acisi; TSOP2238 veri sayfasi garantisi degil
     max_detection_range_m: float = 0.85        # Siperlikli 38 kHz IR verici efektif algilama menzili (m)
     dock_stop_distance_m: float = 0.065        # Istasyon on yuzeyine hedef yanasma/durus mesafesi (m)
     dock_align_tolerance_rad: float = 0.060    # Hizalanma tamamlanma aci toleransi (~3.4 derece)

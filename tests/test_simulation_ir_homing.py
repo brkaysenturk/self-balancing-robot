@@ -1,11 +1,12 @@
 """
 YTU CDTP - Modül C & E 38 kHz IR Alıcı-Verici İstasyona Otonom Yanaşma Doğrulama Testi
 Robotun 30 cm yaklaşma konisi içerisinden (açısal ve yanal kaçıklıklı başlangıç konumundan)
-2x TSOP38438 IR alıcısı ve 38 kHz IR verici fener nirengisiyle istasyona yönelip
+2x TSOP2238 IR alıcısı ve 38 kHz IR verici fener nirengisiyle istasyona yönelip
 ilaç kutusunu düşürmeden hedef mesafede otonom duruşunu Webots fizik motorunda doğrular.
 """
 
 import csv
+from datetime import datetime
 import math
 import os
 from pathlib import Path
@@ -24,14 +25,10 @@ def run_single_pose(pose_str: str, steps: int = 2400) -> None:
     world_path = ROOT / "webots" / "worlds" / "webots_self_balancing_robot.wbt"
     webots_exe = get_webots_executable()
 
-    eval_path = ROOT / "logs" / "homing_evaluation.csv"
-    telem_path = ROOT / "logs" / "homing_telemetry.csv"
-    for p in (eval_path, telem_path):
-        if p.exists():
-            try:
-                p.unlink()
-            except OSError:
-                pass
+    run_dir = ROOT / "logs" / "validation" / "homing" / datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")
+    run_dir.mkdir(parents=True, exist_ok=True)
+    eval_path = run_dir / "evaluation.csv"
+    telem_path = run_dir / "telemetry.csv"
 
     env = os.environ.copy()
     env["PYTHONUTF8"] = "1"

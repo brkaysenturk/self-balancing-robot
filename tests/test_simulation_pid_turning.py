@@ -15,14 +15,15 @@ for path_entry in (str(ROOT), str(ROOT / "analysis/controllers/pid")):
     if path_entry not in sys.path:
         sys.path.insert(0, path_entry)
 
+from self_balancing_robot import CONFIG
 from self_balancing_robot.pid_controller import PIDController
 import simulation_runner as simulation
 from simulation_runner import KEYS
 
 
 def main() -> None:
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    out = ROOT / "logs/pid_tuning" / f"turn_test_{timestamp}"
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    out = ROOT / "logs/pid_tuning/validation/turning" / timestamp
     out.mkdir(parents=True, exist_ok=True)
 
     simulation.SCENARIOS = {
@@ -40,7 +41,8 @@ def main() -> None:
         trace = np.genfromtxt(
             out / f"feedback/seed_{seed}_turns/evaluation.csv", delimiter=",", names=True
         )
-        for start, stop, target in ((4.0, 6.5, 0.6), (12.0, 14.5, -0.6)):
+        target_rate = 2 * CONFIG.mechanics.wheel_radius * CONFIG.mechanics.turn_speed / CONFIG.mechanics.track_width
+        for start, stop, target in ((4.0, 6.5, target_rate), (12.0, 14.5, -target_rate)):
             mask = (trace["time"] > start) & (trace["time"] < stop)
             mean_yaw = float(np.mean(trace["yaw_rate"][mask]))
             assert abs(mean_yaw - target) < 0.16, (seed, mean_yaw, target)

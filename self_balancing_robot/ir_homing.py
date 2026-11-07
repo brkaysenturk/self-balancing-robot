@@ -4,9 +4,14 @@ MODUL: 38 kHz DIFERANSIYEL IR NİRENGİ VE İSTASYONA YANAŞMA (IR HOMING)
 ================================================================================
 Şartname Modül C kapsamında; istasyon üzerindeki 38 kHz kızılötesi (IR) verici
 fenerin yayılım konisini ve robotun Katman 3 ön kenarında 85 mm aralıklı 2 adet
-TSOP38438 IR alıcısının (sol/sağ) diferansiyel sinyal şiddeti algılamasını
+TSOP2238 yerleşimi için (sol/sağ) idealize diferansiyel optik sinyali
 modeller. Herhangi bir şarj/elektriksel kilitlenme içermeden yalnızca alıcı-verici
 hizalanma ve istasyona otonom yanaşıp durma komutlarını (desired_v, desired_turn) üretir.
+
+DONANIM SINIRI: TSOP2238 aktif düşük dijital burst çıkışı verir; analog şiddet/RSSI
+ölçmez. read_receivers konum/yönelimden ideal optik değerler ve geometrik bilgiler
+üretir; gerçek GPIO sürücüsü veya AGC modeli değildir. Donanımda burst okuma ve
+konum/yön kestirimi ayrıca gerekir.
 ================================================================================
 """
 
@@ -19,10 +24,10 @@ from .dc_motor_model import clamp
 
 @dataclass(frozen=True)
 class IRReading:
-    """Sol ve sağ TSOP38438 IR alıcı okumaları ve geometrik nirengi özeti."""
+    """TSOP2238 yerleşimi için ideal optik model ve geometrik nirengi özeti."""
 
-    ir_left: float          # Sol alıcı normalize sinyal şiddeti [0.0 - 1.0]
-    ir_right: float         # Sağ alıcı normalize sinyal şiddeti [0.0 - 1.0]
+    ir_left: float          # Sol ideal optik model değeri [0.0 - 1.0]
+    ir_right: float         # Sağ ideal optik model değeri [0.0 - 1.0]
     ir_diff: float          # Normalize fark: (ir_right - ir_left) / (ir_right + ir_left)
     ir_sum: float           # Toplam sinyal gücü: ir_left + ir_right
     distance_m: float       # Robot ön kenarından IR vericiye yatay mesafe (m)
@@ -36,8 +41,8 @@ class IRReading:
 
 class IRHomingController:
     """
-    2x TSOP38438 alıcı, 1x TCRT5000 yakınlık sensörü ve 38 kHz IR verici fener tabanlı
-    otonom yanaşma kontrolcüsü.
+    2x TSOP2238 alıcı, 1x TCRT5000 yakınlık sensörü ve 38 kHz IR verici fener tabanlı
+    idealize otonom yanaşma simülasyonu; gerçek sensör sürücüsü değildir.
     """
 
     def __init__(self, cfg: RobotConfig = CONFIG):
@@ -65,7 +70,7 @@ class IRHomingController:
     ) -> IRReading:
         """
         Robotun anlık konumu (X, Y) ve yönelim açısından (yaw_rad, ENU'da 0 rad = +Y ileri),
-        Katman 3 ön kenarındaki 2x TSOP38438 IR alıcısının (85 mm aralıklı) gördüğü
+        Katman 3 ön kenarındaki 2x TSOP2238 IR alıcısının (85 mm aralıklı) gördüğü
         38 kHz IR sinyal şiddetlerini hesaplar.
         """
         hcfg = self.cfg.homing
@@ -150,7 +155,7 @@ class IRHomingController:
             dock_in_x * fwd_x + dock_in_y * fwd_y,
         )
 
-        # Sol ve Sağ TSOP38438 sensör konumları (Katman 3 ön kenar, X = +/- 42.5 mm)
+        # Sol ve Sağ TSOP2238 sensör konumları (Katman 3 ön kenar, X = +/- 42.5 mm)
         half_space = 0.5 * hcfg.receiver_spacing_m
         # Sol sensöre hafif sola (-15 derece), sağ sensöre hafif sağa (+15 derece) optik bakış açısı
         cant_rad = math.radians(15.0)

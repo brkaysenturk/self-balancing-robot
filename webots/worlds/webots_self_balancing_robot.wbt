@@ -86,12 +86,47 @@ DEF cdtp_balance_robot Robot {
     }
 
     # ========================================================
+    # WEBOTS MODELLENMİŞ SENSÖRLER (2x TSOP2238 IR Alıcı & TCRT5000)
+    # ========================================================
+    Receiver {
+      name "tsop_left"
+      translation -0.0425 0.050 0.088
+      rotation 0 0 1 0.2618
+      type "infra-red"
+      aperture 2.0944
+      channel 1
+    }
+    Receiver {
+      name "tsop_right"
+      translation 0.0425 0.050 0.088
+      rotation 0 0 1 -0.2618
+      type "infra-red"
+      aperture 2.0944
+      channel 1
+    }
+    DistanceSensor {
+      name "tcrt5000"
+      translation 0 0.050 0.014
+      rotation 0 0 1 1.57079632679
+      type "infra-red"
+      numberOfRays 1
+      aperture 0.1
+      lookupTable [
+        0 4095 0
+        0.005 3500 0.01
+        0.015 2000 0.02
+        0.030 500 0.03
+        0.060 0 0
+      ]
+    }
+
+    # ========================================================
     # SOL TEKERLEK & MOTOR (85 mm Silikon Tekerlek + Enkoder)
     # ========================================================
     HingeJoint {
       jointParameters HingeJointParameters {
         axis 1 0 0
-        anchor -0.085 0 0
+        anchor -0.095 0 0
       }
       device [
         RotationalMotor {
@@ -105,7 +140,7 @@ DEF cdtp_balance_robot Robot {
       ]
       endPoint DEF pid_left_wheel Solid {
         name "left_wheel"
-        translation -0.085 0 0
+        translation -0.095 0 0
         rotation 0 1 0 1.57079632679
         children [
           DEF WHEEL_LEFT Shape {
@@ -146,7 +181,7 @@ DEF cdtp_balance_robot Robot {
     HingeJoint {
       jointParameters HingeJointParameters {
         axis 1 0 0
-        anchor 0.085 0 0
+        anchor 0.095 0 0
       }
       device [
         RotationalMotor {
@@ -160,7 +195,7 @@ DEF cdtp_balance_robot Robot {
       ]
       endPoint DEF pid_right_wheel Solid {
         name "right_wheel"
-        translation 0.085 0 0
+        translation 0.095 0 0
         rotation 0 1 0 1.57079632679
         children [
           DEF WHEEL_RIGHT Shape {
@@ -487,24 +522,24 @@ DEF cdtp_balance_robot Robot {
 
     # Katman 4 Aspirin / Parol Kaset Yuvası Çerçevesi (Holster Rim - 80 × 26 mm)
     Transform {
-      translation 0 0.014 0.1355
+      translation 0 0.015 0.1355
       children [
         DEF HOLSTER_WALL_X Shape {
           appearance USE WHITE_DEKOTA
           geometry Box {
-            size 0.082 0.004 0.020
+            size 0.088 0.004 0.020
           }
         }
       ]
     }
     Transform {
-      translation 0 -0.014 0.1355
+      translation 0 -0.015 0.1355
       children [
         USE HOLSTER_WALL_X
       ]
     }
     Transform {
-      translation -0.040 0 0.1355
+      translation -0.042 0 0.1355
       children [
         DEF HOLSTER_WALL_Y Shape {
           appearance USE WHITE_DEKOTA
@@ -515,7 +550,7 @@ DEF cdtp_balance_robot Robot {
       ]
     }
     Transform {
-      translation 0.040 0 0.1355
+      translation 0.042 0 0.1355
       children [
         USE HOLSTER_WALL_Y
       ]
@@ -541,7 +576,16 @@ DEF cdtp_balance_robot Robot {
   # Gövde Çarpışma Hacmi (BoundingObject - İki Kademeli: Tekerlek Arası ve Üst Şasi)
   boundingObject Group {
     children [
-      # Alt Şasi Bloğu (Tekerlekler Arası Boşluk: 120 mm Genişlik)
+      # Taban plakasinin gercek 150 mm dis siniri (yan aciklik 2.5 mm)
+      Transform {
+        translation 0 0 0.008
+        children [
+          Box {
+            size 0.150 0.100 0.005
+          }
+        ]
+      }
+      # Alt ic bilesenlerin yaklasik carpisma hacmi
       Transform {
         translation 0 0 0.025
         children [
@@ -561,23 +605,23 @@ DEF cdtp_balance_robot Robot {
       }
       # Katman 4 İlaç Yuvası Çerçeve Duvarları (Bounding)
       Transform {
-        translation 0 0.014 0.1355
+        translation 0 0.015 0.1355
         children [
           Box {
-            size 0.082 0.004 0.020
+            size 0.088 0.004 0.020
           }
         ]
       }
       Transform {
-        translation 0 -0.014 0.1355
+        translation 0 -0.015 0.1355
         children [
           Box {
-            size 0.082 0.004 0.020
+            size 0.088 0.004 0.020
           }
         ]
       }
       Transform {
-        translation -0.040 0 0.1355
+        translation -0.042 0 0.1355
         children [
           Box {
             size 0.004 0.026 0.020
@@ -585,7 +629,7 @@ DEF cdtp_balance_robot Robot {
         ]
       }
       Transform {
-        translation 0.040 0 0.1355
+        translation 0.042 0 0.1355
         children [
           Box {
             size 0.004 0.026 0.020
@@ -640,7 +684,9 @@ DEF aspirin_box Solid {
 # 240 mm genişlikten başlayıp daralarak arkada 162 mm yuvaya oturur (150 mm şasi + 12 mm tolerans).
 # Böylece dönen kauçuk tekerlekler yan duvarlara sürtünüp tırmanmaz; yalnız pürüzsüz
 # üst Dekota şasi plakaları huni kılavuzlarından kayarak merkeze tam oturur.
-DEF ir_dock_station Solid {
+DEF ir_dock_station Robot {
+  supervisor TRUE
+  controller "<none>"
   translation 0 1.45 0
   children [
     # İstasyon Taban Plakası (300 mm × 200 mm)
@@ -744,6 +790,37 @@ DEF ir_dock_station Solid {
         USE DOCK_STRAIGHT_RAIL
       ]
     }
+    # 38 kHz Kızılötesi (IR) Verici Emitter Düğümü (Aktif IR Verici)
+    Emitter {
+      name "ir_emitter"
+      translation 0 0.012 0.130
+      rotation 0 0 1 -1.57079632679
+      type "infra-red"
+      aperture 1.5708
+      range 1.0
+      channel 1
+    }
+
+    # Robot Dayanak / Tampon Bölmesi (Robotun Öne Yaslanma Bölmesi)
+    # Robot yanaştığında ön gövdesiyle bu dayanağa yaslanır ve motorlar kapatılır
+    Transform {
+      translation 0 0.010 0.025
+      children [
+        DEF DOCK_BUMPER_STOP Shape {
+          appearance PBRAppearance {
+            baseColor 0.15 0.15 0.18
+            roughness 0.6
+            metalness 0.1
+          }
+          geometry Box {
+            size 0.140 0.014 0.040
+          }
+        }
+      ]
+    }
+
+
+
     # 38 kHz Kızılötesi (IR) Verici Feneri (Katman 3 IR Alıcı Hizasında Z = 0.130 m)
     DEF ir_beacon_emitter Transform {
       translation 0 0.012 0.130
@@ -792,6 +869,16 @@ DEF ir_dock_station Solid {
           }
         ]
       }
+      # Robot Dayanak Bölmesi Fiziksel Çarpışma Bloğu
+      Transform {
+        translation 0 0.010 0.025
+        children [
+          Box {
+            size 0.140 0.014 0.040
+          }
+        ]
+      }
+
       Transform {
         translation -0.104 -0.0475 0.112
         rotation 0 0 1 -0.3756

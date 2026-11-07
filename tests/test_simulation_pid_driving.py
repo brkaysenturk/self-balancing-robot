@@ -21,8 +21,8 @@ from simulation_runner import KEYS
 
 
 def main() -> None:
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    out = ROOT / "logs/pid_tuning" / f"driving_test_{timestamp}"
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    out = ROOT / "logs/pid_tuning/validation/driving" / timestamp
     out.mkdir(parents=True, exist_ok=True)
 
     simulation.SCENARIOS = {

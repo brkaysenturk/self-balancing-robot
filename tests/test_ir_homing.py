@@ -1,5 +1,5 @@
 """
-38 kHz IR verici feneri ve 2x TSOP38438 alıcı nirengisiyle istasyona yanaşma birim testleri.
+38 kHz IR verici feneri ve 2x TSOP2238 alıcı nirengisiyle istasyona yanaşma birim testleri.
 """
 
 import math

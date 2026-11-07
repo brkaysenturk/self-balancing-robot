@@ -476,7 +476,7 @@ def plot_fig5_ir_homing_docking(data: dict[str, dict[str, np.ndarray]]) -> Path:
     ev = data["eval"]
     t = ev["time"]
 
-    # 2x TSOP38438 IR alıcılarının 30 cm yaklaşma konisi boyunca açısal ve mesafesel sinyal profili
+    # 2x TSOP2238 IR alıcılarının 30 cm yaklaşma konisi boyunca açısal ve mesafesel sinyal profili
     homing = IRHomingController()
     bearings_deg = np.linspace(-55.0, 55.0, 300)
     ir_left_curve = []
@@ -497,22 +497,22 @@ def plot_fig5_ir_homing_docking(data: dict[str, dict[str, np.ndarray]]) -> Path:
 
     fig, axes = plt.subplots(2, 2, figsize=(12, 8.5))
     fig.suptitle(
-        "Modül C & E: 38 kHz IR Alıcı-Verici (2x TSOP38438) İstasyona Otonom Yanaşma Analizi",
+        "Modül C & E: 2x TSOP2238 Yerleşimi — İdeal Optik Yanaşma Simülasyonu",
         fontsize=13,
         fontweight="bold",
         y=0.98,
     )
 
-    # Panel (0,0): 2x TSOP38438 Sol/Sağ Alıcı Sinyal Şiddeti ve Fark Karakteristiği
+    # Panel (0,0): 2x TSOP2238 Sol/Sağ Alıcı Sinyal Şiddeti ve Fark Karakteristiği
     ax = axes[0, 0]
-    ax.plot(bearings_deg, ir_left_curve, color=COLOR_PRIMARY, lw=1.6, label="Sol TSOP38438 Alıcı (X = -42.5 mm)")
-    ax.plot(bearings_deg, ir_right_curve, color=COLOR_SECONDARY, lw=1.6, label="Sağ TSOP38438 Alıcı (X = +42.5 mm)")
+    ax.plot(bearings_deg, ir_left_curve, color=COLOR_PRIMARY, lw=1.6, label="Sol TSOP2238 Alıcı (X = -42.5 mm)")
+    ax.plot(bearings_deg, ir_right_curve, color=COLOR_SECONDARY, lw=1.6, label="Sağ TSOP2238 Alıcı (X = +42.5 mm)")
     ax.plot(bearings_deg, ir_diff_curve, color=COLOR_ACCENT, ls="--", lw=1.5, label="Normalize Fark Sinyali (ir_diff)")
     ax.axvline(0.0, color=COLOR_REF, ls=":", lw=0.9)
     ax.axhline(0.0, color=COLOR_REF, ls=":", lw=0.9)
     ax.set_xlabel("İstasyon Yönelim Açısı / Bearing (derece)", fontweight="bold")
     ax.set_ylabel("Normalize IR Sinyal Şiddeti", fontweight="bold")
-    ax.set_title("85 mm Aralıklı Çift TSOP38438 Alıcı Diferansiyel Yönelim Karakteristiği", fontsize=10)
+    ax.set_title("85 mm Aralıklı Çift TSOP2238 Alıcı Diferansiyel Yönelim Karakteristiği", fontsize=10)
     ax.legend(loc="lower right", fontsize=8.0)
     ax.grid(True)
 
