@@ -26,7 +26,7 @@ Bu proje; Yıldız Teknik Üniversitesi Elektrik-Elektronik Fakültesi Çok Disi
 | **Modül A (Statik Denge)** | Dış destek olmadan 30 saniye dik denge ve harici 1.5 N darbe sönümleme | **DOĞRULANDI** | Webots R2025a (`tests/test_simulation_pid.py`) |
 | **Modül B (Sürüş & Duruş)** | 0.8 m – 1.2 m mesafe katetme, 3 sn hareketsiz duruş ve geri sürüş | **DOĞRULANDI** | Webots R2025a (`tests/test_simulation_pid_driving.py`) |
 | **Modül B (Giyilebilir Eldiven)** | ESP32 + MPU-6050 ile ESP-NOW üzerinden kablosuz el jesti kontrolü | **GELİŞTİRİLİYOR** | `esp32/glove/` FreeRTOS firmware |
-| **Modül C (Otonom IR Yanaşma)** | 38 kHz IR verici feneri ve 2x TSOP38438 alıcı nirengisiyle istasyona yaklaşma | **DOĞRULANDI** | Webots R2025a (`tests/test_simulation_ir_homing.py`) |
+| **Modül C (Otonom IR Yanaşma)** | 38 kHz IR verici feneri ve 2x TSOP2238 yerleşimiyle ideal optik/geometrik yanaşma | **SİMÜLASYON; DONANIM BEKLİYOR** | Webots R2025a (`tests/test_simulation_ir_homing.py`) |
 | **Modül D (Şarj Göstergesi)** | Fiziksel temasla şarj başlangıcı/ayrılış durum LED'i | **DONANIM ŞEMASI HAZIR** | Katman 4 durum LED devresi |
 | **Modül E (İlaç Kutusu Taşıma)** | Standart kapalı karton ilaç (Aspirin) kutusunun düşmeden taşınması | **DOĞRULANDI** | Katman 4 dinamik hazne + yerel eksen denetimi |
 | **DC Motor Tork/PWM Modeli** | TB6612 PWM, JGB37 Ters-EMK, armatür direnci ve fiziksel temasla kayma ölçümü | **DOĞRULANDI** | Webots R2025a (`tests/test_simulation_pid.py`) |
@@ -127,7 +127,7 @@ Sistem dört ana katmandan oluşur. Üst katmanlar stratejik referans üretir, a
 
 1. **Katman 1 (Taban / Base Deck):** JGB37 motor L-braketleri, TB6612FNG motor sürücüsü (merkezde), şarj temas pedleri ve 40×20 mm kablo bacası.
 2. **Katman 2 (Güç / Power Deck):** 3S 18650 Li-ion batarya paketi (Ağırlık merkezi CoM = 10 cm hizası), XL4016 8A regülatör, mini PDB, KCD11 switch ve 3A cam sigorta.
-3. **Katman 3 (Beyin / Brain Deck):** ESP32 DevKit V1 + 38-pin vidalı terminal shield, MPU-6050 (tam merkez X=0, Y=0), 2x TSOP38438 IR gözleri ve kablo bacası.
+3. **Katman 3 (Beyin / Brain Deck):** ESP32 DevKit V1 + 38-pin vidalı terminal shield, MPU-6050 (tam merkez X=0, Y=0), 2x TSOP2238 IR gözleri ve kablo bacası.
 4. **Katman 4 (Tavan / Top Deck):** 80 × 26 mm Aspirin kaset yuvası, durum LED'i ve mini kablo bacası (sadece LED kablosu için).
 
 ---
@@ -138,7 +138,9 @@ Sistem dört ana katmandan oluşur. Üst katmanlar stratejik referans üretir, a
 
 - **12V Ham Batarya Hattı:** Batarya (+) ➔ Katman 2 Sigorta (3A) ➔ KCD11 Switch ➔ Katman 1 TB6612 `VM` pini & Katman 2 XL4016 `IN(+)`.
 - **5V Lojik Hattı:** XL4016 5.0V çıkışı ➔ Katman 3 ESP32 `VIN` pini, TB6612 `VCC` pini ve Manyetik Enkoder beslemeleri.
-- **3.3V Sensör Hattı:** ESP32 dahili 3.3V LDO ➔ MPU-6050 `VCC` ve TSOP38438 `VCC`.
+- **3.3V Sensör Hattı:** ESP32 dahili 3.3V LDO ➔ MPU-6050 `VCC` ve TSOP2238 `VS` (pin 2; pin 3 GND, pin 1 OUT). Besleme uygunluğu satın alınan parçanın veri sayfası revizyonuyla doğrulanmalıdır.
+
+**IR donanım sınırı:** TSOP2238 dijital burst alıcısıdır; analog şiddet/RSSI üretmez. `ir_homing.py` optik şiddeti ve konum/yön bilgisini simüle eder. Verici burst üretimi, gerçek GPIO okuması, konum kestirimi ve elektriksel şarj doğrulaması henüz donanımda doğrulanmamıştır.
 
 ### EMI İzolasyon Kararı
 
@@ -197,12 +199,20 @@ python -m unittest discover -s tests
 
 ## 9. Hızlı Başlangıç ve Kullanım
 
+### Önbelleksiz çalışma
+
+Proje ortamını Windows'ta `setup_env.bat` ile kurun. Betik `.env.example` dosyasından
+yerel `.env` ayar dosyası oluşturur; varsa mevcut ayarı korur. Ayrıca Python bytecode,
+Ruff ve pip önbelleklerini kurulum süresince kapatır. VS Code'da bu projeye ait
+yeni Windows terminalleri de aynı ayarları alır; `.pytest_cache` proje ayarından
+kapalıdır. Webots ana kontrolcüsü arayüzden başlatıldığında bytecode yazmaz.
+Webots'un indirdiği PROTO dosyaları ve Matplotlib'in kullanıcı düzeyindeki font
+önbelleği bu ayarlardan bağımsızdır. Genel kullanıcı ayarları değiştirilmez.
+
 ### Gereksinimler ve Kurulum
 
-1. **Python 3.10 - 3.12:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+1. **Python 3.10 - 3.12:** Windows'ta `setup_env.bat` dosyasını çalıştırın.
+   Bağımlılıklar `pyproject.toml` içinden sanal ortama kurulur.
 2. **Webots R2025a:**
    Simülasyon ortamı için [Cyberbotics Webots R2025a](https://cyberbotics.com/) kurulu olmalıdır.
    Standart dışı bir konuma kurulduysa `WEBOTS_EXECUTABLE` ortam değişkeni tanımlanabilir:
@@ -219,8 +229,8 @@ webots webots/worlds/webots_self_balancing_robot.wbt
 Simülasyon penceresine tıkladıktan sonra aşağıdaki tuşlarla robot kontrol edilir:
 - **W / Yukarı Ok:** İleri sürüş (güvenli nominal hız)
 - **S / Aşağı Ok:** Geri sürüş (güvenli nominal hız)
-- **A / Sol Ok:** Sola yumuşak dönüş (~34°/s)
-- **D / Sağ Ok:** Sağa yumuşak dönüş (~34°/s)
+- **A / Sol Ok:** Sola yumuşak dönüş (~31°/s)
+- **D / Sağ Ok:** Sağa yumuşak dönüş (~31°/s)
 - **H Tuşu:** Otonom 38 kHz IR alıcı-verici istasyona yanaşma modu (`IRHomingController`)
 - **P Tuşu:** Robota 4.0 N harici bozucu itme kuvveti uygula
 - **Boşluk (Space):** Dinamik fren yap ve durduğun noktaya konum kilidi at
@@ -254,7 +264,13 @@ self_balancing_robot/
 ├── esp32/                                # Gömülü yazılımlar (ESP32)
 │   ├── robot/                            # Denge robotu FreeRTOS/PID firmware'i
 │   └── glove/                            # Kontrol eldiveni ESP-NOW firmware'i
-├── logs/                                 # Telemetri ve test günlükleri (CSV)
+├── logs/                                 # Tarihli telemetri, doğrulama ve deney kayıtları
+│   ├── telemetry/pid_balance/             # Webots varsayılan çalışma telemetrisi
+│   ├── validation/                       # Test telemetrisi ve evaluation CSV'leri
+│   ├── pid_tuning/optimization/          # Tarihli Optuna aramaları ve raporları
+│   ├── pid_tuning/validation/driving/    # Tarihli sürüş doğrulamaları
+│   ├── pid_tuning/validation/turning/   # Tarihli dönüş doğrulamaları
+│   └── voltage_optuna/                    # Eski gerilim optimizasyon deneyleri
 ├── self_balancing_robot/                 # Bağımsız çekirdek robot yazılım paketi
 │   ├── __init__.py                       # Paket dışa aktarımları
 │   ├── config.py                         # SSOT merkezi konfigürasyon (CONFIG / RobotConfig)
@@ -268,7 +284,7 @@ self_balancing_robot/
 │   ├── worlds/webots_self_balancing_robot.wbt  # Dijital ikiz simülasyon dünyası
 │   └── controllers/webots_main/          # Üretim kodunu çalıştıran Webots kontrolcü adaptörü
 ├── pyproject.toml                        # Paket ve pytest yapılandırması
-├── requirements.txt                      # Python çalışma, analiz ve test bağımlılıkları
+├── setup_env.bat                         # venv oluşturma ve pyproject.toml bağımlılık kurulumu
 ├── pyrightconfig.json                    # Pyright tip ve modül yolu yapılandırması
 ├── ruff.toml                             # Ruff lint yapılandırması
 ├── CITATION.cff                          # Akademik atıf üstverisi

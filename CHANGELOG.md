@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **Chassis fabrication geometry:** Generated matching millimetre SVG/DXF drawings; corrected pocket, fuse, LED, rod and strap dimensions, separated placement references from through cuts, and widened wheel track to 190 mm for 2.5 mm clearance per side. Matched Webots collision width and 80 x 26 mm inner cassette dimensions.
+- **IR receiver hardware consistency:** Standardized CAD, architecture references, simulation descriptions and plot labels on the selected TSOP2238. Documented TSOP38438 pin/AGC/package differences, revision-specific supply compatibility, burst timing, and the gap between digital receiver outputs and the ideal optical/geometric simulation. Marked SVG receiver symbols as placement references and IR mounting geometry as unverified for fabrication; control behavior is unchanged.
 - **Conditional Integration & Clamping Anti-Windup:** Implemented saturation-aware conditional integration and strict clamping limits (`MAX_POS_INT = 0.030 rad`) on the outer loop position integrator to eliminate cascade windup and prevent runaway backward drift.
 - **Discrete 50 Hz Chatter Elimination:** Applied a low-pass filter on the gyro rate (`filtered_rate = 0.70 * filtered_rate + 0.30 * gyro_vals[0]`) to remove discrete Nyquist oscillation at 100 Hz sampling.
 - **Simulation Fall Protection Deadlock:** Moved keyboard sampling and reset key ('R') evaluation before the fall threshold check in the voltage controller adapter, allowing physics recovery even when tilted beyond limit.
