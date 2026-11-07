@@ -38,5 +38,6 @@ where = ["."]
 include = ["self_balancing_robot*"]
 
 [tool.pytest.ini_options]
+addopts = "-p no:cacheprovider"
 pythonpath = [".", "webots/controllers/webots_main"]
 testpaths = ["tests"]

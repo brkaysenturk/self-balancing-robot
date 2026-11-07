@@ -5,6 +5,11 @@
     "*.dxf": "plaintext",
     "*.svg": "xml"
   },
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "terminal.integrated.env.windows": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUFF_NO_CACHE": "true",
+    "PIP_NO_CACHE_DIR": "1"
+  }
 }
 
