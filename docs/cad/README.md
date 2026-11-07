@@ -1,56 +1,59 @@
-# Şasi Mekanik Çizimleri ve Kesim Kılavuzu (150 × 100 mm / 15 × 10 cm Dekota)
+# Şasi çizimleri ve kesim kılavuzu — 150 × 100 mm
 
-Bu dizin, İki Tekerlekli Denge ve İlaç Taşıma Robotunun 4 katmanlı şasisinin imalat, lazer kesim ve manuel işleme dosyalarını içerir.
+[SVG şablonu](/C:/YTU/self-balancing-robot/docs/cad/pleksi_kesim_sablonu.svg) ve
+[DXF çizimi](/C:/YTU/self-balancing-robot/docs/cad/pleksi_katmanlari.dxf),
+[generate_chassis.py](/C:/YTU/self-balancing-robot/docs/cad/generate_chassis.py)
+ile aynı milimetre geometrisinden üretilir. Eski 135 × 95 mm DXF değiştirilmiştir.
 
----
+```text
+python docs/cad/generate_chassis.py
+python docs/cad/generate_chassis.py --check
+```
 
-## 1. Dosyalar ve Formatlar
+Üretici yalnız Python standart kütüphanesini kullanır. SVG fiziksel sayfası
+350 × 285 mm, viewBox birimi 1 mm'dir. Baskıda yüzde 100 ölçek kullanın ve
+sayfaya sığdırmayı kapatın; kontrol çubuğu 50 mm olmalıdır. DXF birimi mm'dir.
+SVG ekran gösterimindeki yakınlaştırma fiziksel baskı ölçeği değildir.
 
-* [pleksi_kesim_sablonu.svg](file:///c:/YTU/self-balancing-robot/docs/cad/pleksi_kesim_sablonu.svg): Güncellenmiş, renkli ve 1:1 ölçekli görsel şablon vektörü (150 × 100 mm).
-* [pleksi_katmanlari.dxf](file:///c:/YTU/self-balancing-robot/docs/cad/pleksi_katmanlari.dxf): Lazer kesim tezgahları ve CAD/CAM yazılımları (AutoCAD, SolidWorks, LightBurn) için doğrudan kesim dosyası.
+## Mekanik ölçüler
 
----
+- Dört plaka: 150 × 100 mm, köşe yarıçapı 5 mm; 5 mm Dekota veya 3 mm pleksi.
+- Tij delikleri: çap 3.4 mm, kenarlardan 6 mm; merkezleri X = +/- 69 mm, Y = +/- 44 mm.
+- Dört katmanda kablo geçişi: 40 × 20 mm; sol arka köşeden merkez (75, 25) mm.
+  Robot merkezine göre X = 0, Y = -25 mm; ön yön +Y'dir.
+- Tekerlek çapı 85 mm, kalınlığı 35 mm, merkezden merkeze iz genişliği 190 mm.
+  İç açıklık 155 mm'dir; 150 mm plaka ile her yanda 2.5 mm boşluk kalır.
+  Fiziksel motor/şaft/braket yerleşimi bu iz genişliğini sağlamalıdır.
+- Katman yükseklikleri taban plaka merkezine göre: 0, 35, 75 ve 115 mm.
+  Webots'ta mil ekseninden plaka merkezlerine: 8, 43, 83 ve 123 mm.
+- Dört plaka 350 × 285 mm çizim sayfasında yerleşir; 350 × 500 mm tabaka yeterlidir.
+  Kesim payı ve kalan malzeme vardır.
 
-## 2. Şasi Genel Ölçüleri ve Malzeme
+## Katmanlar ve işleme ayrımı
 
-* **Plaka Ölçüleri:** **150.0 mm Genişlik × 100.0 mm Derinlik** (15 × 10 cm, Köşe kavisleri R=5.0 mm).
-* **Malzeme:** 5.0 mm Beyaz Dekota (Forex) veya 3.0 mm Pleksi.
-* **Tavsiye Edilen Tabaka:** 35 × 50 cm Dekota tabakası (4 katman sıfır fire ve rahat kesim payıyla çıkar).
-* **Bağlantı Elemanları:** 4 adet kesintisiz M3 tij (gijon - 12.5 cm boy), M3 pul ve somunlar.
-* **Köşe Tij Delikleri:** Kenarlardan 6.0 mm içeride, çap Ø3.4 mm (M3 tijlerin rahat geçmesi için).
+| DXF katmanı / SVG rengi | İşlem |
+| --- | --- |
+| CUT_OUTLINE / mavi | Dış kontur kesimi |
+| CUT_HOLES / turuncu | Geçiş, tij, kayış, switch, sigorta ve LED açıklıkları |
+| REFERENCE / yeşil kesikli | Yerleşim işareti; kesilmez, DXF'te varsayılan olarak dondurulmuştur |
+| POCKET / mor kesikli | Kasetin 80 × 26 mm iç sınırı; kesilmez, DXF'te dondurulmuştur |
 
----
+Lazer/CAM aktarımında yalnız CUT_OUTLINE ve CUT_HOLES seçilmelidir.
+Çizim kerf telafisi içermez; imalatçı kullanılan malzemeye göre uygular.
 
-## 3. Katman Dağılımı ve Bileşen Yerleşimi
+1. **Taban:** JGB37 L-braket ve TB6612FNG yerleşimi, iki adet 15 × 6 mm şarj pedi
+   referansı. Kart/braket montaj delikleri fiziksel parçadan ölçülmeden kesilmez.
+2. **Güç:** 19 × 13 mm switch, çap 12.2 mm sigorta, dört adet 16 × 8 mm kayış
+   açıklığı. Batarya, XL4016 ve Mini PDB sınırları yerleşim referansıdır;
+   ölçülen modül boyutu, soğutucu yüksekliği ve klemens erişimiyle kesinleştirilir.
+3. **Kontrol:** Merkez MPU-6050, ön ESP32 shield ve 85 mm aralıklı TSOP2238
+   referansları. TSOP2238 daireleri paket ayak izi veya kesim deliği değildir.
+   Tutucu ve optik pencere ayrıca tasarlanır. Pinler: 1 OUT, 2 VS, 3 GND;
+   besleme uygunluğu alınan parçanın veri sayfasıyla doğrulanır.
+4. **Tavan:** Çap 5 mm LED deliği ve merkezde 80 × 26 mm kaset iç sınırı.
+   Kaset, sağlam plaka üzerine ayrı çerçeveyle yapılır. 5 mm plakada 5 mm
+   derinlikte oyma tam kesim olur ve kutunun alt desteğini kaldırır; bu sınır
+   geçiş deliği olarak kesilmez. Webots çerçevesinin iç açıklığı da 80 × 26 mm'dir.
 
-### Katman 1 (Taban / Base Deck - Z = 0.0 mm)
-
-* **JGB37-520 Motor L-Braketleri (2 adet):** Sol ve sağ kenarlarda, 37 mm braket delikleri (M3 × 10 mm cıvata ile). İki motor arasında 60 mm geniş açık kablo koridoru kalır.
-* **TB6612FNG Çift Motor Sürücüsü:** Katman 1 tabanında; motorlara giden 12V 20 kHz PWM hatları 3 cm boyunda tutularak EMI gürültüsü tamamen hapsedilir.
-* **Dikey Kablo Bacası (40 × 20 mm):** Koordinat X=75.0 mm, Y=25.0 mm (tüm katmanlarda birebir aynı hizada).
-* **Şarj Temas Pedleri:** Ön kenarda 2 adet 15 × 6 mm bakır temas alanı yuvası.
-
-### Katman 2 (Güç & Dağıtım / Power Deck - Z = +45.0 mm)
-
-* **3S 18650 Li-ion Batarya Paketi:** Şasinin merkezinde; robotun ağırlık merkezini (CoM) ideal yükseklikte tutar.
-* **KCD11 Rocker Açma-Kapama Switch (19 × 13 mm):** Sol arka köşede; bataryadan hemen sonraki ilk ana kesici.
-* **3A Panel Tipi Cam Sigorta Yuvası (Ø12.2 mm):** Sağ arka köşede; ana hattı koruyan kolay değiştirilebilir panel sigortası.
-* **Velcro Kayış Yarıkları (4 adet):** Bataryayı sarsıntısız sabitlemek için 16 × 8 mm yarıklar.
-* **XL4016 8A 200W DC-DC Step-Down Regülatör:** Bataryadan gelen 12V'u lojik için 5.0V'a düşürür. M3 montaj delikleriyle sabitlenir.
-* **Mini Güç Dağıtım Kartı (PDB - 35 × 40 mm Delikli Pertinaks):**
-  * KF301 vidalı klemensler (12V, 5V ve Ortak GND rayları).
-  * 100 uF 25V motor filtre elektrolitik kondansatörü.
-* **Dikey Kablo Bacası:** 40 × 20 mm (Katman 1 ile birebir aynı hizada).
-
-### Katman 3 (Beyin & Algılama / Brain Deck - Z = +85.0 mm)
-
-* **ESP32 38-Pin Vidalı Klemens Shield:** ESP32-WROOM-32D kartı sokete takılır; tüm kablolar vidalı klemenslerle güvenle bağlanır (Turkuaz çerçeve).
-* **MPU-6050 6-DOF IMU:** Tam geometrik merkezde (X=0, Y=0), motor titreşimlerinden ve manyetik alandan izole. Eksen okları tekerlek eksenine paralel gönyelenmiştir.
-* **2x TSOP2238 (38 kHz) IR Alıcı Sensörleri:** Ön kenarda 85 mm diferansiyel aralıkla sola ve sağa bakan nirengi gözleri.
-* **Dikey Kablo Bacası:** 40 × 20 mm (Katman 1 ve 2 ile birebir aynı hizada).
-
-### Katman 4 (Tavan / İlaç Taşıma & Koruma - Z = +125.0 mm)
-
-* **Standart İlaç Kutusu Gömülü Cebi (80 × 26 mm):** Aspirin veya Parol karton kutusunun düşmeden oturması için 5 mm derinlikli kaset havuzu. Katmanın tam merkezindedir.
-* **Sistem / Şarj Durum LED'i:** Ø5.0 mm dairesel delik (Ön kenarda).
-* **Dikey Kablo Bacası:** 40 × 20 mm (Sadece LED kablosu girişi için; üst katta yüksek akımlı güç kablosu kalmamıştır).
+Dosyalar ölçü bakımından eşdeğerdir; elektronik kart ayak izleri, TSOP tutucusu
+ve şaft montajı için fiziksel numune onayı yerine geçmez.

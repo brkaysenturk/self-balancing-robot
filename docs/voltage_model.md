@@ -21,7 +21,7 @@ Açı PD gerilim üretir. `PIDController.compute`, `update_odometry` ile alınan
 
 ### Dönüş kontrolü
 
-Gerilim kontrolcüsünde dönüş komutu artık sabit diferansiyel gerilim olarak uygulanmaz. Komut, iki tekerleğin yarı hız farkını hedefler; enkoderlerden ölçülen yarı hız farkı PI geri beslemesiyle izlenir. `TURN_SPEED = 1.2 rad/s`, mevcut geometride yaklaşık 0.6 rad/s (34 derece/saniye) gövde dönüş hedefidir. Geçişlerde anlık hız bu hedefi aşabilir.
+Gerilim kontrolcüsünde dönüş komutu artık sabit diferansiyel gerilim olarak uygulanmaz. Komut, iki tekerleğin yarı hız farkını hedefler; enkoderlerden ölçülen yarı hız farkı PI geri beslemesiyle izlenir. `TURN_SPEED = 1.2 rad/s`, mevcut geometride yaklaşık 0.537 rad/s (31 derece/saniye) gövde dönüş hedefidir. Geçişlerde anlık hız bu hedefi aşabilir.
 
 Diferansiyel gerilim 2 V ile sınırlıdır; denge çıkışı doyuma yaklaşınca dönüşe ayrılan gerilim azalır. İntegral doyumda büyütülmez ve duruşta sıfırlanır. Dönüş kazançları `KP_TURN = 0.20`, `KI_TURN = 1.0` değerleridir; bunlar düz sürüş Optuna aramasından elde edilmiş kazançlar değildir.
 

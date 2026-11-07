@@ -27,8 +27,10 @@ Kutu/eğim, tam örnekleme ve kayma denetimleri korunur. Puan, senaryo maliyetle
 ortalaması + 0.25 * en kötü maliyettir; açı, hız hatası, gerilim, gerilim değişimi ve son üç saniyedeki hızı içerir.
 Gerilim terimi enerji ölçümü değildir. Bu karşılaştırma istatistiksel üstünlük garantisi vermez.
 
-Sonuçlar `logs/pid_tuning/` altında `trials.json`, `selection.json`, `report.json`,
+Sonuçlar `logs/pid_tuning/optimization/<tarih-saat>/` altında `trials.json`, `selection.json`, `report.json`,
 parametreler, konsol çıktıları ve ham telemetriyle saklanır; izole kaynak kopyası `project/` altındadır.
+Sürüş ve dönüş regresyonları sırasıyla `logs/pid_tuning/validation/driving/` ve
+`logs/pid_tuning/validation/turning/` altında kendi tarihli koşu klasörlerine yazılır.
 Mevcut ve seçilen ayar son testleri geçer ve seçilen ayar daha düşük puan alırsa
 `candidate_params.json` yazılır. Aktif kazançlar otomatik değiştirilmez.
 Adayı uygulamadan önce denge, fiziksel mesafe ve dönüş testleri ayrıca çalıştırılmalıdır.
