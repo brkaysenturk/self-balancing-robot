@@ -9,6 +9,7 @@ from pathlib import Path
 import sys
 
 import numpy as np
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 for path_entry in (str(ROOT), str(ROOT / "analysis/controllers/pid")):
@@ -18,6 +19,7 @@ for path_entry in (str(ROOT), str(ROOT / "analysis/controllers/pid")):
 from self_balancing_robot import PIDController
 import simulation_runner as simulation
 from simulation_runner import KEYS
+from tests.test_simulation_pid import has_webots
 
 
 def main() -> None:
@@ -53,6 +55,12 @@ def main() -> None:
     assert np.mean(np.abs(trace["velocity"][stop_window])) < 0.02, "Duruş ortalama hızı yüksek"
     assert np.max(np.abs(trace["velocity"][stop_window])) < 0.04, "Duruş azami hızı yüksek"
     print(f"PASS: {out}", flush=True)
+
+
+@pytest.mark.simulation
+@pytest.mark.skipif(not has_webots(), reason="Webots çalıştırılabilir dosyası bulunamadı")
+def test_simulation_pid_driving() -> None:
+    main()
 
 
 if __name__ == "__main__":

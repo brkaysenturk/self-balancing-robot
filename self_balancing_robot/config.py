@@ -18,7 +18,7 @@ class MechanicsConfig:
 
     wheel_radius: float = 0.0425       # 85 mm tekerlek capi / 2 = 0.0425 m
     track_width: float = 0.190         # 150 mm sasi + 35 mm tekerlek + iki yanda 2.5 mm aciklik
-    fall_limit_deg: float = 45.0       # Devrilme emniyet kesici siniri (derece)
+    fall_limit_deg: float = 36.0       # Devrilme emniyet kesici siniri (derece)
     drive_speed: float = 0.20          # m/s guvenli nominal surus hizi (Modul B)
     turn_speed: float = 1.20           # rad/s diferansiyel tekerlek hiz farki (~31 derece/saniye)
     payload_max_dx_m: float = 0.040    # Katman 4 kaset yuvasinda X ekseni azami sapma (m)
@@ -101,7 +101,7 @@ class HomingConfig:
     beacon_half_angle_deg: float = 45.0        # Sartname Modul C: 90 derece yaklasma konisi (yarim aci 45 derece)
     receiver_fov_half_deg: float = 60.0        # Optik simulasyon kesim yarim acisi; TSOP2238 veri sayfasi garantisi degil
     max_detection_range_m: float = 0.85        # Siperlikli 38 kHz IR verici efektif algilama menzili (m)
-    dock_stop_distance_m: float = 0.065        # Istasyon on yuzeyine hedef yanasma/durus mesafesi (m)
+    dock_stop_distance_m: float = 0.065        # Frenleme baslangic mesafesi (robot frenleme sonrasi tampon temas bolgesine Y~1.43m yerlesir)
     dock_align_tolerance_rad: float = 0.060    # Hizalanma tamamlanma aci toleransi (~3.4 derece)
     cruise_speed_mps: float = 0.16             # Uzak mesafe (> 30 cm) IR yaklasma hizi (m/s)
     creep_speed_mps: float = 0.08              # Yakin mesafe (<= 30 cm yaklasma bolgesi) hassas yanasma hizi (m/s)

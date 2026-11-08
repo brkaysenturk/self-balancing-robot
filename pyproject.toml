@@ -41,3 +41,6 @@ include = ["self_balancing_robot*"]
 addopts = "-p no:cacheprovider"
 pythonpath = [".", "webots/controllers/webots_main"]
 testpaths = ["tests"]
+markers = [
+    "simulation: Webots fiziksel dijital ikiz entegrasyon testleri",
+]

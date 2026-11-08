@@ -34,7 +34,7 @@ def test_svg_has_physical_scale_and_specified_cut_dimensions():
     assert tuple(float(pocket.get(k)) for k in ("x", "y", "width", "height")) == (35, 37, 80, 26)
     circles = svg.findall(".//s:circle[@class='CUT_HOLES']", NS)
     radii = [float(c.get("r")) for c in circles]
-    assert radii.count(1.7) == 16
+    assert radii.count(2.2) == 16
     assert radii.count(6.1) == 1
     assert radii.count(2.5) == 1
 

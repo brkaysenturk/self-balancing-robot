@@ -379,9 +379,8 @@ def main() -> None:
             if abs(true_pitch_deg) > cfg.mechanics.fall_limit_deg:
                 left_motor.setTorque(0.0)
                 right_motor.setTorque(0.0)
-                if step_count % 50 == 0:
-                    print(f"[EMNIYET] Robot devrildi! Egim: {true_pitch_deg:.1f} deg. Tork sifirlandi.")
-                if max_test_steps > 0 and step_count >= max_test_steps:
+                print(f"[EMNIYET] Robot devrildi! Egim: {true_pitch_deg:.1f} deg. Tork sifirlandi.")
+                if max_test_steps > 0:
                     robot.simulationQuit(1)
                     break
                 continue

@@ -7,18 +7,19 @@ ilaç kutusunu düşürmeden hedef mesafede otonom duruşunu Webots fizik motoru
 
 import csv
 from datetime import datetime
-import math
 import os
 from pathlib import Path
 import subprocess
 import sys
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from self_balancing_robot import CONFIG
-from tests.test_simulation_pid import get_webots_executable
+from tests.test_simulation_pid import get_webots_executable, has_webots
 
 
 def run_single_pose(pose_str: str, steps: int = 2400) -> None:
@@ -68,15 +69,17 @@ def run_single_pose(pose_str: str, steps: int = 2400) -> None:
     tail_rows = [r for r in rows if float(r["time"]) >= (steps * 0.01 - 2.5)]
     tail_vel = max(abs(float(r["velocity"])) for r in tail_rows)
     final_y = float(rows[-1]["position"])
-    expected_front_y = 1.462 - CONFIG.homing.dock_stop_distance_m
     final_front_y = final_y + CONFIG.homing.receiver_forward_offset_m
 
+    # İstasyon dayanak tamponu ön yüzü Y = 1.453 m'dir.
+    # d <= 0.065 m (Y = 1.397 m) frenleme başlangıcı sonrası robot hız sönümleyerek
+    # şarj tamponu temas bölgesine (Y = 1.420 - 1.453 m) oturur.
     print(
-        f"[{pose_str}] Son Ön Kenar Y: {final_front_y:.3f} m (Hedef: ~{expected_front_y:.3f} m) | "
+        f"[{pose_str}] Son Ön Kenar Y: {final_front_y:.3f} m (Şarj Tampon Temas Bölgesi: 1.420 - 1.453 m) | "
         f"Son 2.5s Azami Hız: {tail_vel:.4f} m/s"
     )
-    assert math.isclose(final_front_y, expected_front_y, abs_tol=0.055), (
-        f"Yanaşma duruş konumu hedeften uzak: {final_front_y:.3f} m"
+    assert 1.415 <= final_front_y <= 1.453, (
+        f"Yanaşma duruş konumu şarj tamponu temas bölgesi dışında: {final_front_y:.3f} m"
     )
     assert tail_vel < 0.04, f"İstasyonda duruş hızı sönümlenmedi: {tail_vel:.4f} m/s"
 
@@ -89,6 +92,12 @@ def run_homing_test() -> None:
     # 3. Senaryo: Yana/arkaya dönük başlangıç (yaw = +80 deg, IR görüş dışı) -> Olduğu yerde tarama (Scan) yapıp yanaşma
     run_single_pose("0.0,1.15,1.40", steps=2600)
     print("\n[BASARILI] Tüm 38 kHz IR Alıcı-Verici İstasyona Otonom Yanaşma Testleri Tamamlandı!")
+
+
+@pytest.mark.simulation
+@pytest.mark.skipif(not has_webots(), reason="Webots çalıştırılabilir dosyası bulunamadı")
+def test_simulation_ir_homing() -> None:
+    run_homing_test()
 
 
 if __name__ == "__main__":

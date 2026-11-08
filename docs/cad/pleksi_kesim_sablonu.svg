@@ -1,295 +1,119 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1350 1020" width="100%" height="100%">
-  <defs>
-    <pattern id="cadGrid" width="20" height="20" patternUnits="userSpaceOnUse">
-      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#22272e" stroke-width="0.7"/>
-    </pattern>
-    <style>
-      .title { font-family: 'Inter', -apple-system, sans-serif; font-weight: 800; fill: #58a6ff; }
-      .subtitle { font-family: 'Inter', -apple-system, sans-serif; font-weight: 400; fill: #8b949e; }
-      .plate-title { font-family: 'Inter', -apple-system, sans-serif; font-weight: 700; fill: #f0883e; font-size: 15px; }
-      .plate-sub { font-family: 'Inter', -apple-system, sans-serif; font-weight: 500; fill: #8b949e; font-size: 12px; }
-      .dim-text { font-family: 'Inter', -apple-system, sans-serif; font-size: 10px; fill: #79c0ff; }
-      .note-text { font-family: 'Inter', -apple-system, sans-serif; font-size: 11px; fill: #c9d1d9; }
-      .label-text { font-family: 'Inter', -apple-system, sans-serif; font-size: 11px; fill: #e6edf3; }
-      .outline { fill: #161b22; stroke: #388bfd; stroke-width: 2.5; }
-      .tij-hole { fill: #ff7b72; stroke: #f85149; stroke-width: 1.5; }
-      .mount-hole { fill: #56d364; stroke: #2ea043; stroke-width: 1.2; }
-      .slot { fill: #1c2128; stroke: #d29922; stroke-width: 1.5; stroke-dasharray: 4,2; }
-      .cutout { fill: #0d1117; stroke: #f0883e; stroke-width: 2.0; }
-      .riser { fill: #13233a; stroke: #58a6ff; stroke-width: 2.0; }
-      .dim-line { stroke: #58a6ff; stroke-width: 1.2; stroke-dasharray: 3,3; }
-      
-      /* Modüllere Özel Canlı Renkli Kutular */
-      .driver-box { fill: #14231b; stroke: #3fb950; stroke-width: 2.0; }
-      .pdb-box { fill: #1e192c; stroke: #bc8cff; stroke-width: 2.0; }
-      .reg-box { fill: #241d14; stroke: #d29922; stroke-width: 2.0; stroke-dasharray: 4,2; }
-      .shield-box { fill: #132426; stroke: #14b8a6; stroke-width: 2.0; }
-      .imu-box { fill: #261914; stroke: #f0883e; stroke-width: 2.5; }
-    </style>
-  </defs>
-
-  <!-- Arka Plan & Grid -->
-  <rect width="1350" height="1020" fill="#0d1117"/>
-  <rect width="1350" height="1020" fill="url(#cadGrid)"/>
-
-  <!-- Başlık Bloğu -->
-  <rect x="40" y="20" width="1270" height="75" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
-  <text x="65" y="48" class="title" font-size="20">YTU ÇDTP — İKİ TEKERLEKLİ HASTA DESTEK VE İLAÇ TAŞIMA ROBOTU</text>
-  <text x="65" y="72" class="subtitle" font-size="12">GENİŞLETİLMİŞ 4 KATMANLI ŞASİ ŞABLONU (150×100 mm / 15×10 cm Dekota) | 40×20 mm Kablo Bacası | Ölçek: 1:1 Hazır</text>
-  <text x="1080" y="48" class="plate-title" font-size="14">TABAKA: 35×50 cm</text>
-  <text x="1080" y="70" class="dim-text" font-size="11">Geniş 40×20 mm Kablo Şaftı &amp; Tampon</text>
-
-  <!-- ========================================== -->
-  <!-- KATMAN 1: TABAN KATMANI (Sol Üst - 150×100 mm) -->
-  <!-- ========================================== -->
-  <g transform="translate(60, 125)">
-    <text x="0" y="0" class="plate-title">KATMAN 1: TABAN KATMANI (Base Deck - 150×100 mm)</text>
-    <text x="0" y="18" class="plate-sub">JGB37 Motor L-Braketleri, TB6612FNG Sürücü &amp; 40×20 mm Kablo Bacası</text>
-    
-    <rect x="0" y="30" width="500" height="334" rx="16" class="outline"/>
-    
-    <!-- 4 Köşe M3 Tij Delikleri -->
-    <circle cx="20" cy="50" r="7" class="tij-hole"/>
-    <circle cx="480" cy="50" r="7" class="tij-hole"/>
-    <circle cx="20" cy="344" r="7" class="tij-hole"/>
-    <circle cx="480" cy="344" r="7" class="tij-hole"/>
-    <text x="35" y="54" class="dim-text" font-size="9">Ø3.4mm Tij</text>
-    
-    <!-- Sol Motor L-Braket Yuvası (37 mm Braket) -->
-    <rect x="30" y="87" width="36" height="220" rx="6" class="slot"/>
-    <circle cx="48" cy="107" r="5" class="mount-hole"/>
-    <circle cx="48" cy="137" r="5" class="mount-hole"/>
-    <circle cx="48" cy="257" r="5" class="mount-hole"/>
-    <circle cx="48" cy="287" r="5" class="mount-hole"/>
-    <text x="48" y="78" text-anchor="middle" class="label-text" font-weight="bold" font-size="10" fill="#d29922">Sol Motor</text>
-    <text x="48" y="197" text-anchor="middle" class="dim-text" font-size="9">L-Braket</text>
-    <text x="48" y="322" text-anchor="middle" class="dim-text" font-size="8">M3x10mm</text>
-    
-    <!-- Sağ Motor L-Braket Yuvası (37 mm Braket) -->
-    <rect x="434" y="87" width="36" height="220" rx="6" class="slot"/>
-    <circle cx="452" cy="107" r="5" class="mount-hole"/>
-    <circle cx="452" cy="137" r="5" class="mount-hole"/>
-    <circle cx="452" cy="257" r="5" class="mount-hole"/>
-    <circle cx="452" cy="287" r="5" class="mount-hole"/>
-    <text x="452" y="78" text-anchor="middle" class="label-text" font-weight="bold" font-size="10" fill="#d29922">Sağ Motor</text>
-    <text x="452" y="197" text-anchor="middle" class="dim-text" font-size="9">L-Braket</text>
-    <text x="452" y="322" text-anchor="middle" class="dim-text" font-size="8">M3x10mm</text>
-    
-    <!-- DİKEY KABLO BACASI (40×20 mm -> 133×67 px) -->
-    <rect x="183" y="65" width="134" height="67" rx="8" class="riser"/>
-    <text x="250" y="94" text-anchor="middle" class="label-text" font-weight="bold" font-size="11" fill="#58a6ff">KABLO BACASI</text>
-    <text x="250" y="113" text-anchor="middle" class="dim-text" font-size="10">40×20 mm İç Şaft</text>
-    
-    <!-- TB6612FNG MOTOR SÜRÜCÜSÜ (TAM ORTADA: cx=250, cy=197) -->
-    <rect x="170" y="152" width="160" height="90" rx="8" class="driver-box"/>
-    <circle cx="182" cy="164" r="4" class="mount-hole"/>
-    <circle cx="318" cy="164" r="4" class="mount-hole"/>
-    <circle cx="182" cy="230" r="4" class="mount-hole"/>
-    <circle cx="318" cy="230" r="4" class="mount-hole"/>
-    <text x="250" y="188" text-anchor="middle" class="label-text" font-weight="bold" font-size="12" fill="#56d364">TB6612FNG SÜRÜCÜ</text>
-    <text x="250" y="206" text-anchor="middle" class="dim-text" font-size="10">Motorlara 3cm Kısa Hat</text>
-    <text x="250" y="223" text-anchor="middle" class="dim-text" font-size="9" fill="#7ee787">Şasinin Tam Merkezinde</text>
-    
-    <!-- Ön Şarj Ped Yuvaları -->
-    <rect x="175" y="334" width="50" height="22" rx="4" class="cutout" stroke-dasharray="3,2"/>
-    <rect x="275" y="334" width="50" height="22" rx="4" class="cutout" stroke-dasharray="3,2"/>
-    <text x="200" y="349" text-anchor="middle" class="dim-text" font-size="10">Şarj (+)</text>
-    <text x="300" y="349" text-anchor="middle" class="dim-text" font-size="10">Şarj (-)</text>
-  </g>
-
-  <!-- ========================================== -->
-  <!-- KATMAN 2: GÜÇ & DAĞITIM (Sağ Üst - 150×100 mm) -->
-  <!-- ========================================== -->
-  <g transform="translate(730, 125)">
-    <text x="0" y="0" class="plate-title">KATMAN 2: GÜÇ &amp; DAĞITIM KATMANI (Power Deck)</text>
-    <text x="0" y="18" class="plate-sub">3S Li-ion Batarya, KCD11 Switch, 3A Sigorta, XL4016 &amp; Mini PDB</text>
-    
-    <rect x="0" y="30" width="500" height="334" rx="16" class="outline"/>
-    
-    <!-- 4 Köşe M3 Tij Delikleri -->
-    <circle cx="20" cy="50" r="7" class="tij-hole"/>
-    <circle cx="480" cy="50" r="7" class="tij-hole"/>
-    <circle cx="20" cy="344" r="7" class="tij-hole"/>
-    <circle cx="480" cy="344" r="7" class="tij-hole"/>
-    
-    <!-- DİKEY KABLO BACASI (40×20 mm -> 133×67 px) -->
-    <rect x="183" y="65" width="134" height="67" rx="8" class="riser"/>
-    <text x="250" y="94" text-anchor="middle" class="label-text" font-weight="bold" font-size="11" fill="#58a6ff">KABLO BACASI</text>
-    <text x="250" y="113" text-anchor="middle" class="dim-text" font-size="10">40×20 mm İç Şaft</text>
-    
-    <!-- KCD11 Rocker Anahtar (Sol Üst Arka Köşe - Kolay Ulaşılabilir) -->
-    <rect x="35" y="65" width="65" height="44" rx="4" class="cutout"/>
-    <text x="67" y="86" text-anchor="middle" class="label-text" font-weight="bold" font-size="9" fill="#f0883e">SWITCH</text>
-    <text x="67" y="99" text-anchor="middle" class="dim-text" font-size="8">19×13 mm</text>
-    
-    <!-- 3A Sigorta Yuvası (Sağ Üst Arka Köşe - Kolay Ulaşılabilir) -->
-    <circle cx="435" cy="87" r="16" class="cutout"/>
-    <text x="435" y="84" text-anchor="middle" class="label-text" font-weight="bold" font-size="9" fill="#f0883e">3A SİGORTA</text>
-    <text x="435" y="97" text-anchor="middle" class="dim-text" font-size="8">Ø12.2mm</text>
-    
-    <!-- 3S 18650 Li-ion Batarya Alanı (TAM ORTADA: Y=157..237, cy=197) -->
-    <rect x="125" y="157" width="250" height="80" rx="8" class="shield-box" stroke-dasharray="5,3"/>
-    <text x="250" y="192" text-anchor="middle" class="label-text" font-weight="bold" font-size="12" fill="#79c0ff">3S 18650 Li-ion BATARYA</text>
-    <text x="250" y="212" text-anchor="middle" class="dim-text" font-size="10">Katman 2 Tam Merkezinde (Dengeli Ağırlık)</text>
-    
-    <!-- Velcro Kayış Yarıkları -->
-    <rect x="100" y="164" width="16" height="8" rx="2" class="cutout"/>
-    <rect x="384" y="164" width="16" height="8" rx="2" class="cutout"/>
-    <rect x="100" y="214" width="16" height="8" rx="2" class="cutout"/>
-    <rect x="384" y="214" width="16" height="8" rx="2" class="cutout"/>
-    <text x="75" y="194" text-anchor="middle" class="dim-text" font-size="8">Velcro</text>
-    <text x="410" y="194" text-anchor="middle" class="dim-text" font-size="8">Velcro</text>
-    
-    <!-- MİNİ PDB (Canlı Mor / Eflatun Çerçeve) -->
-    <rect x="45" y="252" width="180" height="82" rx="6" class="pdb-box"/>
-    <circle cx="57" cy="264" r="4" class="mount-hole"/>
-    <circle cx="213" cy="264" r="4" class="mount-hole"/>
-    <circle cx="57" cy="322" r="4" class="mount-hole"/>
-    <circle cx="213" cy="322" r="4" class="mount-hole"/>
-    <text x="135" y="278" text-anchor="middle" class="label-text" font-weight="bold" font-size="11" fill="#bc8cff">MİNİ PDB (Pertinaks)</text>
-    <text x="135" y="296" text-anchor="middle" class="dim-text" font-size="10">KF301 Klemensler</text>
-    <text x="135" y="312" text-anchor="middle" class="dim-text" font-size="9">100uF Filtre Kondansatörü</text>
-    
-    <!-- XL4016 8A REGÜLATÖR (Canlı Sarı/Altın Çerçeve) -->
-    <rect x="275" y="252" width="180" height="82" rx="6" class="reg-box"/>
-    <circle cx="287" cy="264" r="4" class="mount-hole"/>
-    <circle cx="443" cy="264" r="4" class="mount-hole"/>
-    <circle cx="287" cy="322" r="4" class="mount-hole"/>
-    <circle cx="443" cy="322" r="4" class="mount-hole"/>
-    <text x="365" y="278" text-anchor="middle" class="label-text" font-weight="bold" font-size="11" fill="#d29922">XL4016 8A REGÜLATÖR</text>
-    <text x="365" y="296" text-anchor="middle" class="dim-text" font-size="10">12V Giriş  ➔  5.0V Çıkış</text>
-    <text x="365" y="312" text-anchor="middle" class="dim-text" font-size="9">Alüminyum Soğutucu Blok</text>
-  </g>
-
-  <!-- ========================================== -->
-  <!-- KATMAN 3: KONTROL & BEYİN (Sol Alt - MPU TAM MERKEZDE!) -->
-  <!-- ========================================== -->
-  <g transform="translate(60, 520)">
-    <text x="0" y="0" class="plate-title">KATMAN 3: KONTROL &amp; SENSÖR KATMANI (Brain Deck)</text>
-    <text x="0" y="18" class="plate-sub">Merkez MPU-6050 (Denge Ekseni), ESP32 Shield &amp; 2x TSOP2238 IR</text>
-    
-    <rect x="0" y="30" width="500" height="334" rx="16" class="outline"/>
-    
-    <!-- 4 Köşe M3 Tij Delikleri -->
-    <circle cx="20" cy="50" r="7" class="tij-hole"/>
-    <circle cx="480" cy="50" r="7" class="tij-hole"/>
-    <circle cx="20" cy="344" r="7" class="tij-hole"/>
-    <circle cx="480" cy="344" r="7" class="tij-hole"/>
-    
-    <!-- DİKEY KABLO BACASI (40×20 mm -> 133×67 px) -->
-    <rect x="183" y="65" width="134" height="67" rx="8" class="riser"/>
-    <text x="250" y="94" text-anchor="middle" class="label-text" font-weight="bold" font-size="11" fill="#58a6ff">KABLO BACASI</text>
-    <text x="250" y="113" text-anchor="middle" class="dim-text" font-size="10">40×20 mm İç Şaft</text>
-    
-    <!-- ======================================================= -->
-    <!-- MPU-6050 SENSÖRÜ: TAM GEOMETRİK MERKEZDE (X=75mm, Y=50mm) -->
-    <!-- ======================================================= -->
-    <rect x="200" y="158" width="100" height="54" rx="6" class="imu-box"/>
-    <circle cx="212" cy="185" r="4" class="mount-hole"/>
-    <circle cx="288" cy="185" r="4" class="mount-hole"/>
-    <text x="250" y="180" text-anchor="middle" class="label-text" font-weight="bold" font-size="12" fill="#f0883e">MPU-6050 (GY-521)</text>
-    <text x="250" y="196" text-anchor="middle" class="dim-text" font-size="10" fill="#ffb787">TAM MERKEZ (X=0, Y=0)</text>
-    <text x="250" y="207" text-anchor="middle" class="dim-text" font-size="8" fill="#7ee787">Tekerlek Mil Ekseni Üzerinde</text>
-    
-    <!-- ======================================================= -->
-    <!-- ESP32 38-PIN KLEMENS SHIELD: ÖN BÖLGEDE (Sensörün Hemen Önü) -->
-    <!-- ======================================================= -->
-    <rect x="125" y="226" width="250" height="74" rx="8" class="shield-box"/>
-    <circle cx="137" cy="238" r="4" class="mount-hole"/>
-    <circle cx="363" cy="238" r="4" class="mount-hole"/>
-    <circle cx="137" cy="288" r="4" class="mount-hole"/>
-    <circle cx="363" cy="288" r="4" class="mount-hole"/>
-    <text x="250" y="246" text-anchor="middle" class="label-text" font-weight="bold" font-size="12" fill="#2dd4bf">ESP32 38-PIN KLEMENS SHIELD</text>
-    <text x="250" y="264" text-anchor="middle" class="dim-text" font-size="10">Vidalı Terminal Blokları (Soketli)</text>
-    <text x="250" y="280" text-anchor="middle" class="dim-text" font-size="9" fill="#14b8a6">ESP32-WROOM-32D Modülü</text>
-    
-    <!-- 85 mm Diferansiyel Ölçü Çizgisi -->
-    <line x1="108" y1="310" x2="392" y2="310" class="dim-line"/>
-    <line x1="108" y1="305" x2="108" y2="315" class="dim-line"/>
-    <line x1="392" y1="305" x2="392" y2="315" class="dim-line"/>
-    <text x="250" y="306" text-anchor="middle" class="dim-text" font-size="10" fill="#79c0ff">85 mm Diferansiyel Aralık</text>
-    
-    <!-- Ön TSOP2238 IR Alıcı Gözleri -->
-    <circle cx="108" cy="326" r="9" class="cutout"/>
-    <circle cx="392" cy="326" r="9" class="cutout"/>
-    <text x="108" y="348" text-anchor="middle" class="dim-text" font-size="10" font-weight="bold" fill="#f0883e">TSOP (Sol)</text>
-    <text x="392" y="348" text-anchor="middle" class="dim-text" font-size="10" font-weight="bold" fill="#f0883e">TSOP (Sağ)</text>
-  </g>
-
-  <!-- ========================================== -->
-  <!-- KATMAN 4: İLAÇ TAŞIMA VE KORUMA PANELİ (Sağ Alt - 150×100 mm) -->
-  <!-- ========================================== -->
-  <g transform="translate(730, 520)">
-    <text x="0" y="0" class="plate-title">KATMAN 4: İLAÇ TAŞIMA VE KORUMA PANELİ (Top Deck)</text>
-    <text x="0" y="18" class="plate-sub">Sadece İlaç Kaseti (80×26 mm) &amp; Şarj / Durum LED'i (Sıfır Kablo Karmaşası)</text>
-    
-    <rect x="0" y="30" width="500" height="334" rx="16" class="outline"/>
-    
-    <!-- 4 Köşe M3 Tij Delikleri -->
-    <circle cx="20" cy="50" r="7" class="tij-hole"/>
-    <circle cx="480" cy="50" r="7" class="tij-hole"/>
-    <circle cx="20" cy="344" r="7" class="tij-hole"/>
-    <circle cx="480" cy="344" r="7" class="tij-hole"/>
-    
-    <!-- Durum / Şarj Gösterge LED'i (Ø5.0 mm - Ön Kenarda Şık Görünüm) -->
-    <circle cx="250" cy="52" r="8" fill="#56d364" stroke="#3fb950" stroke-width="2"/>
-    <text x="250" y="40" text-anchor="middle" class="label-text" font-size="10">Durum LEDi (Ø5mm)</text>
-    
-    <!-- DİKEY KABLO BACASI (Sadece LED kablosu için şık 40×20 mm geçiş) -->
-    <rect x="183" y="65" width="134" height="67" rx="8" class="riser"/>
-    <text x="250" y="94" text-anchor="middle" class="label-text" font-weight="bold" font-size="11" fill="#58a6ff">KABLO BACASI</text>
-    <text x="250" y="113" text-anchor="middle" class="dim-text" font-size="10">40×20 mm İç Şaft</text>
-    
-    <!-- STANDART ASPİRİN / PAROL İLAÇ KUTUSU CEBİ (TAM ORTADA: Y=145..255, cy=200) -->
-    <rect x="85" y="145" width="330" height="110" rx="10" class="cutout" stroke-width="3"/>
-    <text x="250" y="185" text-anchor="middle" class="label-text" font-weight="bold" font-size="14" fill="#f0883e">STANDART İLAÇ KUTUSU GÖMÜLÜ CEBİ</text>
-    <text x="250" y="212" text-anchor="middle" class="dim-text" font-size="12">80 mm × 26 mm (5 mm Dekota Oyma Kaset)</text>
-    <text x="250" y="234" text-anchor="middle" class="dim-text" font-size="11" fill="#7ee787">Aspirin / Parol Kutusu Düşme Önleyici Güvenli Yuva</text>
-    
-    <text x="250" y="300" text-anchor="middle" class="dim-text" font-size="10" fill="#8b949e">★ Bu Kat Tamamen İlaç Güvenliğine ve Yük Dengesine Ayrılmıştır ★</text>
-  </g>
-
-  <!-- ========================================== -->
-  <!-- KAPSAMLI VE NET LEJANT ALANI (Alt Kısım) -->
-  <!-- ========================================== -->
-  <g transform="translate(60, 920)">
-    <!-- Çerçeve -->
-    <rect x="0" y="0" width="1230" height="65" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.2"/>
-    
-    <!-- Satır 1 -->
-    <g transform="translate(25, 24)">
-      <!-- 1. Tij Deliği -->
-      <circle cx="0" cy="0" r="6" class="tij-hole"/>
-      <text x="15" y="4" class="note-text" font-weight="bold">Ø3.4mm Tij Delikleri:</text>
-      <text x="145" y="4" class="note-text" fill="#8b949e">4 Köşeden Geçen Taşıyıcı M3 Çelik Kolonlar</text>
-      
-      <!-- 2. Montaj Deliği (Yeşil) -->
-      <circle cx="480" cy="0" r="5" class="mount-hole"/>
-      <text x="495" y="4" class="note-text" font-weight="bold" fill="#56d364">Ø3.2mm M3 Vida Delikleri:</text>
-      <text x="655" y="4" class="note-text" fill="#8b949e">Motor Braketleri, Shield, Regülatör Montajı</text>
-      
-      <!-- 3. Kablo Bacası -->
-      <rect x="940" y="-7" width="20" height="14" rx="3" class="riser"/>
-      <text x="970" y="4" class="note-text" font-weight="bold" fill="#58a6ff">Kablo Bacası:</text>
-      <text x="1055" y="4" class="note-text" fill="#8b949e">40×20 mm Dikey İç Geçiş (Geniş Şaft)</text>
-    </g>
-
-    <!-- Satır 2 -->
-    <g transform="translate(25, 48)">
-      <!-- 4. Lazer Kesim / Boşaltma -->
-      <rect x="-8" y="-7" width="18" height="14" rx="3" class="cutout"/>
-      <text x="15" y="4" class="note-text" font-weight="bold" fill="#f0883e">Turuncu Çizgiler:</text>
-      <text x="120" y="4" class="note-text" fill="#8b949e">Lazer Kesim / Dekota İç Boşaltma (İlaç Cebi, Switch, Sigorta)</text>
-      
-      <!-- 5. Modül Yerleşim Slotu -->
-      <rect x="480" y="-7" width="20" height="14" rx="3" class="slot"/>
-      <text x="510" y="4" class="note-text" font-weight="bold" fill="#d29922">Sarı Kesikli Çizgi:</text>
-      <text x="620" y="4" class="note-text" fill="#8b949e">Parça Yerleşim Sınırı (L-Braket, Regülatör)</text>
-      
-      <!-- 6. Ölçü Çizgisi -->
-      <line x1="940" y1="0" x2="960" y2="0" class="dim-line"/>
-      <text x="970" y="4" class="note-text" font-weight="bold" fill="#79c0ff">Mavi Kesikli Çizgi:</text>
-      <text x="1085" y="4" class="note-text" fill="#8b949e">Teknik Ölçü ve Aralık Referansı</text>
-    </g>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="350mm" height="285mm" viewBox="0 0 350 285" font-family="sans-serif" font-size="2.5" fill="#c9d1d9">
+<rect width="350" height="285" fill="#0d1117"/>
+<path d="M 0 0 V 285 M 5 0 V 285 M 10 0 V 285 M 15 0 V 285 M 20 0 V 285 M 25 0 V 285 M 30 0 V 285 M 35 0 V 285 M 40 0 V 285 M 45 0 V 285 M 50 0 V 285 M 55 0 V 285 M 60 0 V 285 M 65 0 V 285 M 70 0 V 285 M 75 0 V 285 M 80 0 V 285 M 85 0 V 285 M 90 0 V 285 M 95 0 V 285 M 100 0 V 285 M 105 0 V 285 M 110 0 V 285 M 115 0 V 285 M 120 0 V 285 M 125 0 V 285 M 130 0 V 285 M 135 0 V 285 M 140 0 V 285 M 145 0 V 285 M 150 0 V 285 M 155 0 V 285 M 160 0 V 285 M 165 0 V 285 M 170 0 V 285 M 175 0 V 285 M 180 0 V 285 M 185 0 V 285 M 190 0 V 285 M 195 0 V 285 M 200 0 V 285 M 205 0 V 285 M 210 0 V 285 M 215 0 V 285 M 220 0 V 285 M 225 0 V 285 M 230 0 V 285 M 235 0 V 285 M 240 0 V 285 M 245 0 V 285 M 250 0 V 285 M 255 0 V 285 M 260 0 V 285 M 265 0 V 285 M 270 0 V 285 M 275 0 V 285 M 280 0 V 285 M 285 0 V 285 M 290 0 V 285 M 295 0 V 285 M 300 0 V 285 M 305 0 V 285 M 310 0 V 285 M 315 0 V 285 M 320 0 V 285 M 325 0 V 285 M 330 0 V 285 M 335 0 V 285 M 340 0 V 285 M 345 0 V 285 M 350 0 V 285 M 0 0 H 350 M 0 5 H 350 M 0 10 H 350 M 0 15 H 350 M 0 20 H 350 M 0 25 H 350 M 0 30 H 350 M 0 35 H 350 M 0 40 H 350 M 0 45 H 350 M 0 50 H 350 M 0 55 H 350 M 0 60 H 350 M 0 65 H 350 M 0 70 H 350 M 0 75 H 350 M 0 80 H 350 M 0 85 H 350 M 0 90 H 350 M 0 95 H 350 M 0 100 H 350 M 0 105 H 350 M 0 110 H 350 M 0 115 H 350 M 0 120 H 350 M 0 125 H 350 M 0 130 H 350 M 0 135 H 350 M 0 140 H 350 M 0 145 H 350 M 0 150 H 350 M 0 155 H 350 M 0 160 H 350 M 0 165 H 350 M 0 170 H 350 M 0 175 H 350 M 0 180 H 350 M 0 185 H 350 M 0 190 H 350 M 0 195 H 350 M 0 200 H 350 M 0 205 H 350 M 0 210 H 350 M 0 215 H 350 M 0 220 H 350 M 0 225 H 350 M 0 230 H 350 M 0 235 H 350 M 0 240 H 350 M 0 245 H 350 M 0 250 H 350 M 0 255 H 350 M 0 260 H 350 M 0 265 H 350 M 0 270 H 350 M 0 275 H 350 M 0 280 H 350 M 0 285 H 350" fill="none" stroke="#222b38" stroke-width="0.12"/>
+<rect x="5" y="3" width="340" height="15" rx="2" fill="#161b22" stroke="#30363d" stroke-width="0.3"/>
+<text x="10" y="9" fill="#58a6ff" font-size="4" font-weight="bold">YTÜ ÇDTP — İKİ TEKERLEKLİ İLAÇ TAŞIMA ROBOTU</text>
+<text x="10" y="14" fill="#8b949e" font-size="2.4">150 × 100 mm Dekota | 40 × 20 mm kablo bacası | 190 mm iz: fiziksel montaj teyidi gerekli</text>
+<text x="337" y="9" text-anchor="end" fill="#f0883e" font-size="3" font-weight="bold">TEKNİK YERLEŞİM</text>
+<text x="337" y="14" text-anchor="end" fill="#79c0ff">mm / 1:1 · 35 × 50 cm tabaka</text>
+<g transform="translate(10,25)">
+<text x="0" y="-2" fill="#f0883e" font-size="3.2" font-weight="bold">KATMAN 1: TABAN / MOTORLAR</text>
+<rect id="1-0" class="CUT_OUTLINE" fill="#161b22" stroke="#388bfd" stroke-width="0.4" x="0" y="0" width="150" height="100" rx="5"><title>Plaka 150 x 100 / R5</title></rect>
+<circle id="1-1" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="6" cy="6" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<circle id="1-2" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="6" cy="94" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<circle id="1-3" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="144" cy="6" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<circle id="1-4" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="144" cy="94" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<rect id="1-5" class="CUT_HOLES" fill="#13233a" stroke="#58a6ff" stroke-width="0.4" x="55" y="15" width="40" height="20" rx="0"><title>Kablo bacasi 40 x 20</title></rect>
+<text x="75.0" y="24.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.8">KABLO BACASI</text>
+<text x="75.0" y="28.0" text-anchor="middle" fill="#58a6ff" font-size="2.3">40 × 20 mm / dikey geçiş</text>
+<rect id="1-6" class="REFERENCE" fill="#14231b" stroke="#3fb950" stroke-width="0.4" stroke-dasharray="1.4 0.8" x="12" y="28" width="18" height="44" rx="0"><title>Motor L-braket (olculecek)</title></rect>
+<text x="21.0" y="49.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.1">JGB37</text>
+<text x="21.0" y="53.0" text-anchor="middle" fill="#3fb950" font-size="2.1">L-braket</text>
+<rect id="1-7" class="REFERENCE" fill="#14231b" stroke="#3fb950" stroke-width="0.4" stroke-dasharray="1.4 0.8" x="120" y="28" width="18" height="44" rx="0"><title>Motor L-braket (olculecek)</title></rect>
+<text x="129.0" y="49.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.1">JGB37</text>
+<text x="129.0" y="53.0" text-anchor="middle" fill="#3fb950" font-size="2.1">L-braket</text>
+<rect id="1-8" class="REFERENCE" fill="#14231b" stroke="#3fb950" stroke-width="0.4" stroke-dasharray="1.4 0.8" x="64" y="39" width="22" height="22" rx="0"><title>TB6612FNG</title></rect>
+<text x="75.0" y="49.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.1">TB6612FNG</text>
+<text x="75.0" y="53.0" text-anchor="middle" fill="#3fb950" font-size="2.1">Motor sürücü</text>
+<rect id="1-9" class="REFERENCE" fill="#14231b" stroke="#3fb950" stroke-width="0.4" stroke-dasharray="1.4 0.8" x="52.5" y="91" width="15" height="6" rx="0"><title>Sarj pedi (+) 15 x 6</title></rect>
+<text x="60.0" y="93.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="1.8">ŞARJ PEDİ (+)</text>
+<text x="60.0" y="97.0" text-anchor="middle" fill="#3fb950" font-size="1.8">15 × 6 mm</text>
+<rect id="1-10" class="REFERENCE" fill="#14231b" stroke="#3fb950" stroke-width="0.4" stroke-dasharray="1.4 0.8" x="82.5" y="91" width="15" height="6" rx="0"><title>Sarj pedi (-) 15 x 6</title></rect>
+<text x="90.0" y="93.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="1.8">ŞARJ PEDİ (−)</text>
+<text x="90.0" y="97.0" text-anchor="middle" fill="#3fb950" font-size="1.8">15 × 6 mm</text>
+<path d="M 0 103 V 106 M 0 104.5 H 150 M 150 103 V 106" fill="none" stroke="#58a6ff" stroke-width="0.2" stroke-dasharray="1 1"/>
+<text x="75" y="110" text-anchor="middle" fill="#79c0ff">150 mm × 100 mm · ÖN / +Y</text></g>
+<g transform="translate(185,25)">
+<text x="0" y="-2" fill="#f0883e" font-size="3.2" font-weight="bold">KATMAN 2: GÜÇ VE DAĞITIM</text>
+<rect id="2-0" class="CUT_OUTLINE" fill="#161b22" stroke="#388bfd" stroke-width="0.4" x="0" y="0" width="150" height="100" rx="5"><title>Plaka 150 x 100 / R5</title></rect>
+<circle id="2-1" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="6" cy="6" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<circle id="2-2" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="6" cy="94" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<circle id="2-3" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="144" cy="6" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<circle id="2-4" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="144" cy="94" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<rect id="2-5" class="CUT_HOLES" fill="#13233a" stroke="#58a6ff" stroke-width="0.4" x="55" y="15" width="40" height="20" rx="0"><title>Kablo bacasi 40 x 20</title></rect>
+<text x="75.0" y="24.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.8">KABLO BACASI</text>
+<text x="75.0" y="28.0" text-anchor="middle" fill="#58a6ff" font-size="2.3">40 × 20 mm / dikey geçiş</text>
+<rect id="2-6" class="CUT_HOLES" fill="#0d1117" stroke="#f0883e" stroke-width="0.4" x="10.5" y="11.5" width="19" height="13" rx="0"><title>Switch 19 x 13</title></rect>
+<text x="20.0" y="17.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.1">SWITCH</text>
+<text x="20.0" y="21.0" text-anchor="middle" fill="#f0883e" font-size="2.1">19 × 13 mm</text>
+<circle id="2-7" class="CUT_HOLES" fill="#0d1117" stroke="#f0883e" stroke-width="0.4" cx="130" cy="18" r="6.1"><title>Sigorta / cap 12.2</title></circle>
+<text x="130" y="10.700000000000001" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.3">SİGORTA Ø12.2</text>
+<rect id="2-8" class="REFERENCE" fill="#132426" stroke="#14b8a6" stroke-width="0.4" stroke-dasharray="1.4 0.8" x="37.5" y="38" width="75" height="24" rx="0"><title>Batarya (yerlesim)</title></rect>
+<text x="75.0" y="49.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.8">3S 18650 Li-ion BATARYA</text>
+<text x="75.0" y="53.0" text-anchor="middle" fill="#14b8a6" font-size="2.3">Merkezde / yerleşim referansı</text>
+<rect id="2-9" class="REFERENCE" fill="#1e192c" stroke="#bc8cff" stroke-width="0.4" stroke-dasharray="1.4 0.8" x="13" y="68" width="35" height="25" rx="0"><title>Mini PDB (yerlesim)</title></rect>
+<text x="30.5" y="79.5" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.8">MİNİ PDB</text>
+<text x="30.5" y="83.5" text-anchor="middle" fill="#bc8cff" font-size="2.3">KF301 klemensler</text>
+<rect id="2-10" class="REFERENCE" fill="#241d14" stroke="#d29922" stroke-width="0.4" stroke-dasharray="1.4 0.8" x="90" y="68" width="45" height="25" rx="0"><title>XL4016 (yerlesim)</title></rect>
+<text x="112.5" y="79.5" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.8">XL4016 REGÜLATÖR</text>
+<text x="112.5" y="83.5" text-anchor="middle" fill="#d29922" font-size="2.3">12 V → 5 V / yerleşim</text>
+<rect id="2-11" class="CUT_HOLES" fill="#0d1117" stroke="#f0883e" stroke-width="0.4" x="17" y="38" width="16" height="8" rx="0"><title>Kayis 16 x 8</title></rect>
+<text x="25.0" y="41.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="1.8">KAYIŞ GEÇİŞİ</text>
+<text x="25.0" y="45.0" text-anchor="middle" fill="#f0883e" font-size="1.8">16 × 8 mm</text>
+<rect id="2-12" class="CUT_HOLES" fill="#0d1117" stroke="#f0883e" stroke-width="0.4" x="17" y="54" width="16" height="8" rx="0"><title>Kayis 16 x 8</title></rect>
+<text x="25.0" y="57.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="1.8">KAYIŞ GEÇİŞİ</text>
+<text x="25.0" y="61.0" text-anchor="middle" fill="#f0883e" font-size="1.8">16 × 8 mm</text>
+<rect id="2-13" class="CUT_HOLES" fill="#0d1117" stroke="#f0883e" stroke-width="0.4" x="117" y="38" width="16" height="8" rx="0"><title>Kayis 16 x 8</title></rect>
+<text x="125.0" y="41.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="1.8">KAYIŞ GEÇİŞİ</text>
+<text x="125.0" y="45.0" text-anchor="middle" fill="#f0883e" font-size="1.8">16 × 8 mm</text>
+<rect id="2-14" class="CUT_HOLES" fill="#0d1117" stroke="#f0883e" stroke-width="0.4" x="117" y="54" width="16" height="8" rx="0"><title>Kayis 16 x 8</title></rect>
+<text x="125.0" y="57.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="1.8">KAYIŞ GEÇİŞİ</text>
+<text x="125.0" y="61.0" text-anchor="middle" fill="#f0883e" font-size="1.8">16 × 8 mm</text>
+<path d="M 0 103 V 106 M 0 104.5 H 150 M 150 103 V 106" fill="none" stroke="#58a6ff" stroke-width="0.2" stroke-dasharray="1 1"/>
+<text x="75" y="110" text-anchor="middle" fill="#79c0ff">150 mm × 100 mm · ÖN / +Y</text></g>
+<g transform="translate(10,150)">
+<text x="0" y="-2" fill="#f0883e" font-size="3.2" font-weight="bold">KATMAN 3: KONTROL VE ALGILAMA</text>
+<rect id="3-0" class="CUT_OUTLINE" fill="#161b22" stroke="#388bfd" stroke-width="0.4" x="0" y="0" width="150" height="100" rx="5"><title>Plaka 150 x 100 / R5</title></rect>
+<circle id="3-1" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="6" cy="6" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<circle id="3-2" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="6" cy="94" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<circle id="3-3" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="144" cy="6" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<circle id="3-4" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="144" cy="94" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<rect id="3-5" class="CUT_HOLES" fill="#13233a" stroke="#58a6ff" stroke-width="0.4" x="55" y="15" width="40" height="20" rx="0"><title>Kablo bacasi 40 x 20</title></rect>
+<text x="75.0" y="24.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.8">KABLO BACASI</text>
+<text x="75.0" y="28.0" text-anchor="middle" fill="#58a6ff" font-size="2.3">40 × 20 mm / dikey geçiş</text>
+<rect id="3-6" class="REFERENCE" fill="#261914" stroke="#f0883e" stroke-width="0.4" stroke-dasharray="1.4 0.8" x="65" y="42.5" width="20" height="15" rx="0"><title>MPU-6050 (yerlesim)</title></rect>
+<text x="75.0" y="49.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.1">MPU-6050</text>
+<text x="75.0" y="53.0" text-anchor="middle" fill="#f0883e" font-size="2.1">Tam merkez</text>
+<rect id="3-7" class="REFERENCE" fill="#132426" stroke="#14b8a6" stroke-width="0.4" stroke-dasharray="1.4 0.8" x="42.5" y="62" width="65" height="28" rx="0"><title>ESP32 shield (olculecek)</title></rect>
+<text x="75.0" y="75.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.8">ESP32 38-PIN SHIELD</text>
+<text x="75.0" y="79.0" text-anchor="middle" fill="#14b8a6" font-size="2.3">Vidalı terminal / ölçülecek</text>
+<circle id="3-8" class="REFERENCE" fill="#14231b" stroke="#3fb950" stroke-width="0.4" stroke-dasharray="1.4 0.8" cx="32.5" cy="100" r="1.5"><title>TSOP2238 sol</title></circle>
+<text x="32.5" y="97.3" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.3">TSOP2238 / SOL</text>
+<circle id="3-9" class="REFERENCE" fill="#14231b" stroke="#3fb950" stroke-width="0.4" stroke-dasharray="1.4 0.8" cx="117.5" cy="100" r="1.5"><title>TSOP2238 sag</title></circle>
+<text x="117.5" y="97.3" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.3">TSOP2238 / SAĞ</text>
+<path d="M 0 103 V 106 M 0 104.5 H 150 M 150 103 V 106" fill="none" stroke="#58a6ff" stroke-width="0.2" stroke-dasharray="1 1"/>
+<text x="75" y="110" text-anchor="middle" fill="#79c0ff">150 mm × 100 mm · ÖN / +Y</text></g>
+<g transform="translate(185,150)">
+<text x="0" y="-2" fill="#f0883e" font-size="3.2" font-weight="bold">KATMAN 4: İLAÇ TAŞIMA</text>
+<rect id="4-0" class="CUT_OUTLINE" fill="#161b22" stroke="#388bfd" stroke-width="0.4" x="0" y="0" width="150" height="100" rx="5"><title>Plaka 150 x 100 / R5</title></rect>
+<circle id="4-1" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="6" cy="6" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<circle id="4-2" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="6" cy="94" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<circle id="4-3" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="144" cy="6" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<circle id="4-4" class="CUT_HOLES" fill="#ff7b72" stroke="#f85149" stroke-width="0.4" cx="144" cy="94" r="2.2"><title>M4 tij / cap 4.4</title></circle>
+<rect id="4-5" class="CUT_HOLES" fill="#13233a" stroke="#58a6ff" stroke-width="0.4" x="55" y="15" width="40" height="20" rx="0"><title>Kablo bacasi 40 x 20</title></rect>
+<text x="75.0" y="24.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.8">KABLO BACASI</text>
+<text x="75.0" y="28.0" text-anchor="middle" fill="#58a6ff" font-size="2.3">40 × 20 mm / dikey geçiş</text>
+<rect id="4-6" class="POCKET" fill="#261b15" stroke="#f0883e" stroke-width="0.4" stroke-dasharray="1.4 0.8" x="35" y="37" width="80" height="26" rx="0"><title>Kaset IC SINIRI 80 x 26</title></rect>
+<text x="75.0" y="49.0" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.8">İLAÇ KASETİ / İÇ SINIR</text>
+<text x="75.0" y="53.0" text-anchor="middle" fill="#f0883e" font-size="2.3">80 × 26 mm / tam kesilmez</text>
+<circle id="4-7" class="CUT_HOLES" fill="#0d1117" stroke="#f0883e" stroke-width="0.4" cx="75" cy="92" r="2.5"><title>LED / cap 5</title></circle>
+<text x="75" y="88.3" text-anchor="middle" fill="#e6edf3" font-weight="bold" font-size="2.3">DURUM LEDİ Ø5</text>
+<path d="M 0 103 V 106 M 0 104.5 H 150 M 150 103 V 106" fill="none" stroke="#58a6ff" stroke-width="0.2" stroke-dasharray="1 1"/>
+<text x="75" y="110" text-anchor="middle" fill="#79c0ff">150 mm × 100 mm · ÖN / +Y</text></g>
+<rect x="5" y="263" width="340" height="19" rx="2" fill="#161b22" stroke="#30363d" stroke-width="0.3"/>
+<text x="10" y="267" fill="#c9d1d9" font-size="2.4">MAVİ: dış kesim  |  TURUNCU: açıklıklar  |  KIRMIZI: Ø4.4 mm M4 tij, kenardan 6 mm</text>
+<text x="10" y="271" fill="#c9d1d9" font-size="2.4">KESİLMEZ: kesikli kart / IR / ped referansları ve 80 × 26 mm kaset iç sınırı. Kaset sağlam tavan üzerine çerçevelenir.</text>
+<text x="10" y="275" fill="#c9d1d9" font-size="2.4">Kart / braket delikleri ve TSOP2238 tutucusu ölçülecek. CAM: yalnız CUT_OUTLINE + CUT_HOLES katmanlarını seçin.</text>
+<text x="10" y="279" fill="#c9d1d9" font-size="2.4">1:1 baskı: %100 / sayfaya sığdırma kapalı. Kontrol çubuğu: 50 mm</text>
+<path d="M 265 279 h 50 m -50 -1 v 2 m 50 -2 v 2" fill="none" stroke="#79c0ff" stroke-width="0.2"/>
 </svg>

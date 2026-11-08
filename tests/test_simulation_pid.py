@@ -10,6 +10,8 @@ import os
 import shutil
 import subprocess
 
+import pytest
+
 
 def get_webots_executable() -> str:
     """Webots çalıştırılabilir dosya yolunu sistem ve ortam değişkenlerinden bulur."""
@@ -42,6 +44,15 @@ def get_webots_executable() -> str:
     raise FileNotFoundError(
         "Webots çalıştırılabilir dosyası bulunamadı! Lütfen WEBOTS_EXECUTABLE ortam değişkenini ayarlayın."
     )
+
+
+def has_webots() -> bool:
+    """Webots çalıştırılabilir dosyasının sistemde kurulu olup olmadığını kontrol eder."""
+    try:
+        get_webots_executable()
+        return True
+    except FileNotFoundError:
+        return False
 
 
 def run_pid_test() -> None:
@@ -113,6 +124,12 @@ def run_pid_test() -> None:
     assert max(abs(r["pitch_deg"]) for r in records) < 15.0, "Asiri govde yatışı"
 
     print("\n[BASARILI] Gerilim/PWM Tabanlı DC Motor Denge Testi (30s) Eksiksiz Tamamlandı!")
+
+
+@pytest.mark.simulation
+@pytest.mark.skipif(not has_webots(), reason="Webots çalıştırılabilir dosyası bulunamadı")
+def test_simulation_pid_balance() -> None:
+    run_pid_test()
 
 
 if __name__ == "__main__":
